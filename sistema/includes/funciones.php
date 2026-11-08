@@ -187,6 +187,15 @@ function validar_token(): void
     }
 }
 
+function responder_json(int $codigo, array $datos): void
+{
+    http_response_code($codigo);
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    echo json_encode($datos, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 function solo_post(): void
 {
     if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {

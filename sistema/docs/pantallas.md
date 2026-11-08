@@ -163,8 +163,13 @@ acumulada.
 
 ### Pedidos (administrador)
 
-Consulta de todos los pedidos (captura 05) con filtros por estado y zona y el
-vehiculo asignado a cada uno. **Ver** abre el detalle: plan, zona, direccion,
+Consulta de todos los pedidos (captura 05) con busqueda por cliente o numero de pedido,
+filtros por estado y zona y el vehiculo asignado a cada uno. La lista se actualiza **sin recargar la
+pagina**: al escribir en el buscador (con una pequena espera) o al cambiar un filtro, el navegador pide
+los pedidos a `api/pedidos.php` con `fetch()` y rehace la tabla con el JSON que recibe. Mientras espera muestra
+"Cargando pedidos...", al terminar cuenta cuantos encontro y si algo falla (sin conexion, sesion vencida o un error del
+servidor) avisa con un mensaje y un boton **Reintentar**. El boton **Filtrar** y la direccion con filtros
+(`?estado=...&buscar=...`) siguen funcionando sin JavaScript. **Ver** abre el detalle: plan, zona, direccion,
 fechas de pedido y de entrega, estado, total y los platos con sus subtotales.
 
 ### Stock minimo

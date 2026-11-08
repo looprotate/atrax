@@ -66,7 +66,7 @@ atrax/
     includes/            infraestructura comun
       config.php         datos de conexion y constantes
       conexion.php       PDO, funciones de consulta preparada y en_transaccion()
-      funciones.php      escape, validaciones, mensajes, token CSRF y cabeceras de seguridad
+      funciones.php      escape, validaciones, mensajes, token CSRF, respuestas JSON y cabeceras de seguridad
       auth.php           sesion, roles y guardas de acceso
       cabecera.php       encabezado, navegacion y mensajes
       pie.php            cierre de pagina y scripts
@@ -85,6 +85,7 @@ atrax/
       productos.php  planes.php  stock_minimo.php  usuarios.php
       produccion.php  stock.php  pedidos.php  distribucion.php
       pedido_cliente.php
+    api/                 consultas asincronas: devuelven JSON (pedidos.php)
     admin/               pantallas del administrador
     operador/            pantallas del operador
     cliente/             pantallas del cliente
@@ -96,6 +97,7 @@ atrax/
     assets/js/avisos.js  pop ups: avisos flotantes y ventanas de confirmacion
     assets/js/esqueletos.js  esqueletos de carga al navegar entre pantallas
     assets/js/efectos.js  numeros que suben, barra de viandas y confeti al confirmar un pedido
+    assets/js/pedidos_en_vivo.js  filtro y busqueda de pedidos con fetch(), sin recargar
     assets/js/pantalla_error.js  boton volver y reintento automatico de las pantallas de error
     bd/atrax.sql         estructura + datos de prueba
     docs/                documentacion, pruebas y capturas
@@ -104,7 +106,8 @@ atrax/
 La separacion es: las paginas (`admin/`, `operador/`, `cliente/`) solo arman la
 presentacion y hacen consultas de lectura a traves de `modelo/`; toda la escritura
 pasa por `acciones/`, que valida en el servidor y vuelve a la pagina con el
-resultado. Ningun archivo de presentacion escribe SQL.
+resultado, y las consultas que la pantalla pide sin recargar pasan por `api/`, que
+responde JSON. Ningun archivo de presentacion escribe SQL.
 
 ## Documentacion
 
@@ -148,7 +151,9 @@ resultado. Ningun archivo de presentacion escribe SQL.
 **Administrador**
 
 - Dashboard con pedidos del dia, viandas a producir, viandas en reparto y alertas.
-- Consulta de pedidos con filtros por estado y zona, y detalle de cada pedido.
+- Consulta de pedidos con busqueda por cliente o numero y filtros por estado y zona que se
+  actualizan sin recargar la pagina (`fetch()` a `api/pedidos.php`, que responde JSON), y
+  detalle de cada pedido.
 - Configuracion del stock minimo por plato (alta el disparador de las alertas).
 - Menus y precios: precio y disponibilidad de cada plato, alta de platos nuevos
   y cantidad de viandas de cada modalidad.

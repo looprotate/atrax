@@ -49,7 +49,7 @@ necesita seguir; falta la bitacora de los cambios de parametrizacion.
 | RNF1 | Seguridad | Contrasenas con `password_hash` (bcrypt), consultas con sentencias preparadas, token CSRF en cada formulario, cookie de sesion `HttpOnly` y `SameSite=Lax`, regeneracion del identificador de sesion al entrar, bloqueo temporal tras 5 ingresos fallidos, cierre de sesion solo por `POST` con token, cabeceras de seguridad (`Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) y `.htaccess` que no sirve `bd/`, `docs/` ni archivos `.sql`, `.md`, `.sh` o `.txt` |
 | RNF2 | Usabilidad | Navegacion fija por rol, mensajes de exito y de error en la misma pantalla, y formularios que conservan lo escrito cuando hay un error |
 | RNF3 | Escalabilidad | Zonas, vehiculos, platos, planes y stock minimo son datos, no codigo |
-| RNF4 | Mantenibilidad | Separacion en `includes` (infraestructura), `modelo` (datos), `acciones` (escritura) y paginas (presentacion) |
+| RNF4 | Mantenibilidad | Separacion en `includes` (infraestructura), `modelo` (datos), `acciones` (escritura), `api` (consultas JSON) y paginas (presentacion) |
 | RNF5 | Accesibilidad | HTML semantico (`header`, `nav`, `main`, `section`, `article`, `footer`), `label` asociado a cada campo, `aria-label` en los controles sin texto visible y textos alternativos en los mensajes |
 | RNF6 | Disponibilidad | Aplicacion sin estado en el servidor mas alla de la sesion; se puede reiniciar sin perder datos |
 | RNF7 | Rendimiento | Consultas agregadas resueltas en la base con indices sobre las claves primarias y foraneas |

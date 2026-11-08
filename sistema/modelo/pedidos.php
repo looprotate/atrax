@@ -49,6 +49,12 @@ function listar_pedidos(array $filtros = []): array
         $parametros[] = $filtros['cliente_id'];
     }
 
+    if (!empty($filtros['buscar'])) {
+        $sql .= ' AND (u.nombre LIKE ? OR p.id = ?)';
+        $parametros[] = '%' . addcslashes($filtros['buscar'], '%_\\') . '%';
+        $parametros[] = (int) ltrim($filtros['buscar'], '#');
+    }
+
     if (!empty($filtros['hoy'])) {
         $sql .= ' AND p.fecha_entrega = CURDATE()';
     }

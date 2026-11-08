@@ -8,12 +8,13 @@ require_once __DIR__ . '/../modelo/zonas.php';
 
 $estadoFiltro = $_GET['estado'] ?? '';
 $zonaFiltro   = entero($_GET['zona_id'] ?? '');
+$buscarFiltro = mb_substr(trim((string) ($_GET['buscar'] ?? '')), 0, 100);
 
 if (!in_array($estadoFiltro, estados_pedido(), true)) {
     $estadoFiltro = '';
 }
 
-$pedidos = listar_pedidos(['estado' => $estadoFiltro, 'zona_id' => $zonaFiltro]);
+$pedidos = listar_pedidos(['estado' => $estadoFiltro, 'zona_id' => $zonaFiltro, 'buscar' => $buscarFiltro]);
 $zonas   = listar_zonas();
 $detalle = isset($_GET['ver']) ? pedido_por_id((int) $_GET['ver']) : null;
 
@@ -30,8 +31,14 @@ require __DIR__ . '/../includes/cabecera.php';
 
 <section class="panel">
   <header><h2>Filtros</h2></header>
-  <form class="row g-3" action="<?= url('admin/pedidos.php') ?>" method="get">
-    <div class="col-md-4">
+  <form class="row g-3" action="<?= url('admin/pedidos.php') ?>" method="get"
+        data-pedidos-en-vivo data-api="<?= url('api/pedidos.php') ?>" data-ver="<?= url('admin/pedidos.php?ver=') ?>">
+    <div class="col-md-3">
+      <label class="form-label" for="buscar">Buscar</label>
+      <input class="form-control" type="search" id="buscar" name="buscar" maxlength="100"
+             placeholder="Cliente o numero" value="<?= e($buscarFiltro) ?>" autocomplete="off">
+    </div>
+    <div class="col-md-3">
       <label class="form-label" for="estado">Estado</label>
       <select class="form-select" id="estado" name="estado">
         <option value="">Todos</option>
@@ -40,7 +47,7 @@ require __DIR__ . '/../includes/cabecera.php';
         <?php endforeach; ?>
       </select>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <label class="form-label" for="zona_id">Zona</label>
       <select class="form-select" id="zona_id" name="zona_id">
         <option value="">Todas</option>
@@ -51,21 +58,24 @@ require __DIR__ . '/../includes/cabecera.php';
         <?php endforeach; ?>
       </select>
     </div>
-    <div class="col-md-4 d-flex align-items-end gap-2">
+    <div class="col-md-3 d-flex align-items-end gap-2">
       <button class="btn btn-primary" type="submit">Filtrar</button>
-      <a class="btn btn-outline-secondary" href="<?= url('admin/pedidos.php') ?>">Limpiar</a>
+      <a class="btn btn-outline-secondary" href="<?= url('admin/pedidos.php') ?>" data-limpiar>Limpiar</a>
     </div>
   </form>
 </section>
 
-<section class="panel">
-  <header><h2>Resultados (<?= count($pedidos) ?>)</h2></header>
+<section class="panel" data-pedidos-resultados>
+  <header>
+    <h2>Resultados (<span data-pedidos-total><?= count($pedidos) ?></span>)</h2>
+    <p class="en-vivo-estado mb-0" role="status" aria-live="polite" data-pedidos-estado></p>
+  </header>
   <div class="tabla-scroll">
     <table class="table align-middle">
       <thead>
         <tr><th>Pedido</th><th>Cliente</th><th>Tipo</th><th>Zona</th><th>Entrega</th><th>Viandas</th><th>Estado</th><th>Vehiculo</th><th class="text-end">Total</th><th></th></tr>
       </thead>
-      <tbody>
+      <tbody data-pedidos-cuerpo>
         <?php foreach ($pedidos as $pedido): ?>
           <tr>
             <td class="fw-semibold">#<?= (int) $pedido['id'] ?></td>
@@ -124,4 +134,5 @@ require __DIR__ . '/../includes/cabecera.php';
     </div>
   </section>
 <?php endif; ?>
+<script src="<?= url('assets/js/pedidos_en_vivo.js') ?>"></script>
 <?php require __DIR__ . '/../includes/pie.php'; ?>

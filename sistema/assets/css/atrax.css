@@ -728,6 +728,27 @@ h1, h2, h3 { letter-spacing: .2px; }
   to { opacity: 1; }
 }
 
+/* Aviso de estado de los filtros que consultan al servidor sin recargar (pedidos_en_vivo.js). */
+.en-vivo-estado { min-height: 1.3rem; font-size: .85rem; color: var(--tinta-2); }
+.en-vivo-estado.error { color: var(--error-texto); }
+.en-vivo-estado.cargando::before {
+  content: "";
+  display: inline-block;
+  width: .8em;
+  height: .8em;
+  margin-right: .45rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -.1em;
+  animation: vs-giro .7s linear infinite;
+}
+.panel[aria-busy="true"] .tabla-scroll { opacity: .55; transition: opacity .15s; }
+
+@keyframes vs-giro {
+  to { transform: rotate(360deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .vs-esqueleto, .vs-navegando::before { animation: none; }
+  .vs-esqueleto, .vs-navegando::before, .en-vivo-estado.cargando::before { animation: none; }
 }

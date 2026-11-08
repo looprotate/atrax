@@ -23,10 +23,14 @@ if (!preg_match('/^[A-Z0-9]{2,5}$/', $codigo)) {
 
 if (mb_strlen($nombre) < 3) {
     $errores[] = 'El nombre de la zona debe tener al menos 3 caracteres.';
+} elseif (mb_strlen($nombre) > 60) {
+    $errores[] = 'El nombre de la zona no puede superar 60 caracteres.';
 }
 
 if (mb_strlen($barrios) < 3) {
     $errores[] = 'Indica al menos un barrio.';
+} elseif (mb_strlen($barrios) > 150) {
+    $errores[] = 'Los barrios no pueden superar 150 caracteres.';
 }
 
 if ($id > 0 && zona_por_id($id) === null) {

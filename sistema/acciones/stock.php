@@ -31,6 +31,8 @@ if ($tipo !== 'Descarte' && ($cantidad === null || $cantidad < 1 || $cantidad > 
 
 if (mb_strlen($motivo) < 3) {
     $errores[] = 'El motivo debe tener al menos 3 caracteres.';
+} elseif (mb_strlen($motivo) > 150) {
+    $errores[] = 'El motivo no puede superar 150 caracteres.';
 }
 
 if (!$errores && $tipo === 'Salida' && $cantidad > (int) $lote['disponible']) {

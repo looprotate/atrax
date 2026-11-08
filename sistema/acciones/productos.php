@@ -20,10 +20,14 @@ if ($accion === 'crear') {
 
     if (mb_strlen($nombre) < 3) {
         $errores[] = 'El nombre del plato debe tener al menos 3 caracteres.';
+    } elseif (mb_strlen($nombre) > 100) {
+        $errores[] = 'El nombre del plato no puede superar 100 caracteres.';
     }
 
     if (mb_strlen($descripcion) < 5) {
         $errores[] = 'La descripcion debe tener al menos 5 caracteres.';
+    } elseif (mb_strlen($descripcion) > 255) {
+        $errores[] = 'La descripcion no puede superar 255 caracteres.';
     }
 
     if ($precio === false || $precio <= 0 || $precio > 99999) {

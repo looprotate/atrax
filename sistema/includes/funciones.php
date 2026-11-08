@@ -57,12 +57,12 @@ function entero($valor): ?int
 
 function es_email(string $valor): bool
 {
-    return filter_var($valor, FILTER_VALIDATE_EMAIL) !== false;
+    return mb_strlen($valor) <= 150 && filter_var($valor, FILTER_VALIDATE_EMAIL) !== false;
 }
 
 function es_telefono(string $valor): bool
 {
-    return preg_match('/^[0-9 +()-]{8,20}$/', $valor) === 1;
+    return preg_match('/^[0-9 +()-]{8,20}$/', $valor) === 1 && preg_match_all('/[0-9]/', $valor) >= 8;
 }
 
 function es_fecha(string $valor): bool

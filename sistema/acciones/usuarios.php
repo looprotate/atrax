@@ -39,6 +39,8 @@ if ($accion === 'crear') {
 
     if (mb_strlen($nombre) < 3) {
         $errores[] = 'El nombre debe tener al menos 3 caracteres.';
+    } elseif (mb_strlen($nombre) > 100) {
+        $errores[] = 'El nombre no puede superar 100 caracteres.';
     }
 
     if (!preg_match('/^[A-Za-z0-9_.]{4,40}$/', $nombreUsuario)) {
@@ -63,6 +65,8 @@ if ($accion === 'crear') {
 
     if (mb_strlen($contrasena) < 8) {
         $errores[] = 'La contrasena debe tener al menos 8 caracteres.';
+    } elseif (trim($contrasena) === '') {
+        $errores[] = 'La contrasena no puede estar formada solo por espacios.';
     }
 
     if ($errores) {

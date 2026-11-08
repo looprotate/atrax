@@ -246,6 +246,31 @@ h1, h2, h3 { letter-spacing: .2px; }
 .tarjeta.agotado h3, .tarjeta.agotado p { color: var(--tinta-2); }
 .tarjeta.alerta .tarjeta-numero { color: var(--aviso-texto); }
 
+.tarjeta-plato { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.plato-cuerpo { padding: 1rem 1.1rem 1.1rem; }
+
+.plato-foto {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--azul);
+  border-bottom: 1px solid var(--linea);
+}
+
+.plato-miniatura {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: .45rem;
+  border: 1px solid var(--linea);
+  background: var(--azul);
+}
+
+.tarjeta.agotado .plato-foto, .tarjeta.agotado .plato-miniatura { filter: grayscale(1); opacity: .6; }
+
 .panel {
   background: var(--superficie);
   border: 1px solid var(--linea);

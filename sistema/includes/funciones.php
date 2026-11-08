@@ -26,6 +26,17 @@ function url(string $ruta = ''): string
     return base_url() . '/' . ltrim($ruta, '/');
 }
 
+function imagen_plato(?string $archivo): string
+{
+    $archivo = basename((string) $archivo);
+
+    if ($archivo === '' || !is_file(APP_RAIZ . '/assets/img/platos/' . $archivo)) {
+        $archivo = 'sin-imagen.svg';
+    }
+
+    return url('assets/img/platos/' . $archivo);
+}
+
 function redirigir(string $ruta): void
 {
     header('Location: ' . url($ruta));

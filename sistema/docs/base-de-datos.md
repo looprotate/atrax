@@ -12,7 +12,7 @@ de prueba) esta en [`bd/atrax.sql`](../bd/atrax.sql).
 | `usuarios` | Datos comunes de todos los usuarios | `id` | `rol_id` -> `roles` | `usuario`, `email` |
 | `clientes` | Datos propios del cliente | `id` | `usuario_id` -> `usuarios`, `zona_id` -> `zonas` | `usuario_id` |
 | `vehiculos` | Flota de reparto y su capacidad | `id` | `zona_id` -> `zonas` | `matricula` |
-| `productos` | Platos del menu y su stock minimo | `id` | — | `nombre` |
+| `productos` | Platos del menu, su stock minimo y su foto (`imagen`, opcional) | `id` | — | `nombre` |
 | `planes` | Modalidades semanal, quincenal y mensual | `id` | — | `nombre` |
 | `lotes` | Produccion de un plato con su vencimiento | `id` | `producto_id` -> `productos`, `operador_id` -> `usuarios` | `numero_lote` |
 | `pedidos` | Pedido de un cliente | `id` | `cliente_id`, `plan_id`, `zona_id`, `vehiculo_id` | — |
@@ -60,6 +60,8 @@ quedan fuera de esta version porque ninguna pantalla los produce todavia.
 
 - `CHECK (capacidad > 0)` en `vehiculos`.
 - `CHECK (precio > 0)` y `CHECK (stock_minimo >= 0)` en `productos`.
+- `productos.imagen` guarda solo el nombre del archivo dentro de `assets/img/platos/`; si esta vacio
+  o el archivo no existe, el sistema muestra `sin-imagen.svg`.
 - `CHECK (viandas > 0)` en `planes`.
 - `CHECK (cantidad > 0)` y `CHECK (disponible >= 0 AND disponible <= cantidad)` en `lotes`.
 - `CHECK (cantidad > 0)` en `pedido_detalle` y en `movimientos_stock`.

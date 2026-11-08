@@ -14,7 +14,7 @@ con una solucion distinta a la del diseno; **No implementado** = fuera de esta e
 | RF1 | Gestion de usuarios con tres perfiles | Implementado | `admin/usuarios.php`; el admin no puede desactivarse a si mismo |
 | RF2 | Inicio de sesion con redireccion por rol | Modificado | Funciona, pero se quitaron "Recordarme" y "Olvidaste tu contrasena" del diseno porque no estan implementados |
 | RF3 | Registro autonomo de clientes | Modificado | Se agregaron tipo de cliente y zona, que el sistema necesita para distribuir |
-| RF4 | Consulta del menu con disponibilidad | Modificado | Disponibilidad real desde los lotes; sin fotos de los platos |
+| RF4 | Consulta del menu con disponibilidad | Implementado | Disponibilidad real desde los lotes y foto de cada plato (creditos en `assets/img/platos/CREDITOS.md`) |
 | RF5 | Pedidos por modalidad con total | Modificado | Carrito y confirmacion en una sola pantalla, con resumen en ventana emergente |
 | RF6 | Seguimiento e historial | Modificado | Linea de tiempo con fecha y responsable en lugar del mapa del diseno |
 | RF7 | Produccion del dia | Modificado | Tickets con pedido, producido y faltante; sin impresion |

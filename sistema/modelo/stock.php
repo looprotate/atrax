@@ -5,14 +5,14 @@ require_once __DIR__ . '/../includes/conexion.php';
 function stock_por_producto(): array
 {
     return consultar(
-        'SELECT p.id, p.nombre, p.descripcion, p.precio, p.stock_minimo, p.activo,
+        'SELECT p.id, p.nombre, p.descripcion, p.precio, p.stock_minimo, p.imagen, p.activo,
                 COALESCE(SUM(l.disponible), 0) AS disponible
          FROM productos p
          LEFT JOIN lotes l
                 ON l.producto_id = p.id
                AND l.estado = "Disponible"
                AND l.fecha_vencimiento >= CURDATE()
-         GROUP BY p.id, p.nombre, p.descripcion, p.precio, p.stock_minimo, p.activo
+         GROUP BY p.id, p.nombre, p.descripcion, p.precio, p.stock_minimo, p.imagen, p.activo
          ORDER BY p.nombre'
     );
 }

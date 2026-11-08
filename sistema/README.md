@@ -89,6 +89,7 @@ atrax/
     cliente/             pantallas del cliente
     assets/css/atrax.css estilos propios sobre Bootstrap
     assets/img/          logo completo (logo.svg), usado tambien como favicon
+    assets/img/platos/   foto de cada plato, imagen de reemplazo y creditos de las fotos
     assets/js/validaciones.js  validaciones y ayudas del lado del cliente
     assets/js/avisos.js  pop ups: avisos flotantes y ventanas de confirmacion
     assets/js/esqueletos.js  esqueletos de carga al navegar entre pantallas
@@ -154,7 +155,8 @@ resultado. Ningun archivo de presentacion escribe SQL.
 
 **Cliente**
 
-- Menu con las modalidades y los platos disponibles segun el stock real.
+- Menu con las modalidades y los platos disponibles segun el stock real, cada uno con su
+  foto (los agotados se ven en gris).
 - Armado de pedido: eleccion de modalidad, fecha de entrega y cantidades por plato,
   con un resumen en ventana emergente (platos, subtotales y total) antes de
   confirmar y descuento del stock por FIFO al confirmar.

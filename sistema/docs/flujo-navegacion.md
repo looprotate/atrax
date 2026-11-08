@@ -101,6 +101,6 @@ hizo, y es lo que el cliente ve en la pantalla de seguimiento.
 | 11 Stock + alertas | `operador/stock.php` | Igual al diseno; la trazabilidad se ve en los movimientos |
 | 12 Distribucion por zonas | `operador/distribucion.php` | La asignacion es por selector en lugar de arrastrar |
 | 13 Acceso del cliente | `login.php` y `registro.php` | Las mismas pantallas responden en movil |
-| 14 Menu disponible | `cliente/index.php` | Igual al diseno, sin fotos de los platos |
+| 14 Menu disponible | `cliente/index.php` | Igual al diseno, con la foto de cada plato |
 | 15 Armar pedido | `cliente/pedido.php` | Carrito y confirmacion en una sola pantalla |
 | 16 Seguimiento del pedido | `cliente/seguimiento.php` y `cliente/pedidos.php` | Sin mapa: linea de tiempo con fecha y responsable |

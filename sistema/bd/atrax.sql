@@ -64,6 +64,7 @@ CREATE TABLE productos (
   descripcion VARCHAR(255) NOT NULL,
   precio DECIMAL(10,2) NOT NULL,
   stock_minimo INT NOT NULL DEFAULT 0,
+  imagen VARCHAR(120) NULL,
   activo TINYINT(1) NOT NULL DEFAULT 1,
   UNIQUE KEY uq_productos_nombre (nombre),
   CONSTRAINT ck_productos_precio CHECK (precio > 0),
@@ -190,12 +191,12 @@ INSERT INTO vehiculos (id, zona_id, nombre, matricula, capacidad, estado) VALUES
 (3, 3, 'Moto 1', 'XY 9012', 18, 'Disponible'),
 (4, 6, 'Moto 2', 'XY 3456', 18, 'Mantenimiento');
 
-INSERT INTO productos (id, nombre, descripcion, precio, stock_minimo, activo) VALUES
-(1, 'Milanesa con ensalada', 'Milanesa de carne al horno con ensalada mixta', 490.00, 15, 1),
-(2, 'Pollo grillado con pure', 'Suprema grillada con pure de papa y calabaza', 490.00, 15, 1),
-(3, 'Tarta de verdura', 'Tarta de acelga y ricota con masa casera', 460.00, 10, 1),
-(4, 'Ensalada de quinoa', 'Quinoa con vegetales de estacion y semillas', 470.00, 12, 1),
-(5, 'Wok de vegetales', 'Vegetales salteados con arroz integral', 470.00, 15, 1);
+INSERT INTO productos (id, nombre, descripcion, precio, stock_minimo, imagen, activo) VALUES
+(1, 'Milanesa con ensalada', 'Milanesa de carne al horno con ensalada mixta', 490.00, 15, 'milanesa-con-ensalada.jpg', 1),
+(2, 'Pollo grillado con pure', 'Suprema grillada con pure de papa y calabaza', 490.00, 15, 'pollo-grillado-con-pure.jpg', 1),
+(3, 'Tarta de verdura', 'Tarta de acelga y ricota con masa casera', 460.00, 10, 'tarta-de-verdura.jpg', 1),
+(4, 'Ensalada de quinoa', 'Quinoa con vegetales de estacion y semillas', 470.00, 12, 'ensalada-de-quinoa.jpg', 1),
+(5, 'Wok de vegetales', 'Vegetales salteados con arroz integral', 470.00, 15, 'wok-de-vegetales.jpg', 1);
 
 INSERT INTO planes (id, nombre, descripcion, viandas, activo) VALUES
 (1, 'Semanal', '5 viandas, de lunes a viernes', 5, 1),

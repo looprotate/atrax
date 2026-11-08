@@ -82,8 +82,8 @@ registrados. Al terminar vuelve al login con el aviso "Cuenta creada".
 
 Pantalla inicial del cliente (capturas 17 y 22). Muestra la zona y direccion de
 entrega, las **modalidades** (Semanal 5, Quincenal 10 y Mensual 20 viandas) y los
-**platos** con precio y disponibilidad real segun el stock; los agotados se ven
-atenuados. El boton **Armar pedido** lleva al formulario.
+**platos** con su foto, precio y disponibilidad real segun el stock; los agotados se ven
+atenuados y sin color. El boton **Armar pedido** lleva al formulario.
 
 ### Armar pedido
 

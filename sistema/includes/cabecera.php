@@ -10,6 +10,7 @@ $menu  = menu_de($rol);
 $yo    = usuario();
 $exito = flash_leer('exito');
 $exitoTitulo = flash_leer('exito_titulo', 'Listo');
+$celebrar = (bool) flash_leer('celebrar');
 $listaErrores = errores();
 ?>
 <!DOCTYPE html>
@@ -21,6 +22,7 @@ $listaErrores = errores();
 <link rel="icon" type="image/svg+xml" href="<?= url('assets/img/logo.svg') ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?= url('assets/css/atrax.css') ?>">
+<link rel="stylesheet" href="<?= url('assets/css/efectos.css') ?>">
 </head>
 <body class="rol-<?= e($rol ?: 'publico') ?>">
 <?php if (autenticado()): ?>
@@ -96,7 +98,7 @@ $listaErrores = errores();
 
 <div class="atrax-toasts" aria-live="polite" data-avisos>
   <?php if ($exito): ?>
-    <div class="toast show vs-toast exito" role="status" aria-atomic="true" data-bs-delay="5000">
+    <div class="toast show vs-toast exito" role="status" aria-atomic="true" data-bs-delay="5000"<?= $celebrar ? ' data-celebrar' : '' ?>>
       <span class="vs-toast-icono" aria-hidden="true">&#10003;</span>
       <div class="vs-toast-cuerpo">
         <p class="vs-toast-titulo"><?= e($exitoTitulo) ?></p>

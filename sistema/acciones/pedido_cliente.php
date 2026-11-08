@@ -104,4 +104,6 @@ try {
     volver_con_errores($volver, ['No se pudo registrar el pedido: ' . $error->getMessage()], $datos);
 }
 
+flash_guardar('exito_titulo', 'Pedido confirmado');
+flash_guardar('celebrar', true);
 volver_con_exito('cliente/seguimiento.php?id=' . $pedidoId, 'Pedido #' . $pedidoId . ' confirmado. Te avisamos cuando este en camino.');

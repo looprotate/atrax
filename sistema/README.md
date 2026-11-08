@@ -88,11 +88,13 @@ atrax/
     operador/            pantallas del operador
     cliente/             pantallas del cliente
     assets/css/atrax.css estilos propios sobre Bootstrap
+    assets/css/efectos.css transiciones y animaciones (respetan prefers-reduced-motion)
     assets/img/          logo completo (logo.svg), usado tambien como favicon
     assets/img/platos/   foto de cada plato, imagen de reemplazo y creditos de las fotos
     assets/js/validaciones.js  validaciones y ayudas del lado del cliente
     assets/js/avisos.js  pop ups: avisos flotantes y ventanas de confirmacion
     assets/js/esqueletos.js  esqueletos de carga al navegar entre pantallas
+    assets/js/efectos.js  numeros que suben, barra de viandas y confeti al confirmar un pedido
     bd/atrax.sql         estructura + datos de prueba
     docs/                documentacion, pruebas y capturas
 ```
@@ -132,6 +134,11 @@ resultado. Ningun archivo de presentacion escribe SQL.
   delicadas piden confirmacion en una ventana (cerrar sesion, desactivar usuarios,
   quitar pedidos de un vehiculo, cancelar pedidos y descartar lotes).
 
+- Interfaz con movimiento: las pantallas entran con una animacion escalonada, los numeros
+  de las tarjetas suben hasta su valor, las tarjetas y los botones reaccionan al mouse y el
+  paso actual del seguimiento late. Con "reducir movimiento" activado en el sistema todo
+  esto se desactiva.
+
 **Administrador**
 
 - Dashboard con pedidos del dia, viandas a producir, viandas en reparto y alertas.
@@ -159,7 +166,8 @@ resultado. Ningun archivo de presentacion escribe SQL.
   foto (los agotados se ven en gris).
 - Armado de pedido: eleccion de modalidad, fecha de entrega y cantidades por plato,
   con un resumen en ventana emergente (platos, subtotales y total) antes de
-  confirmar y descuento del stock por FIFO al confirmar.
+  confirmar y descuento del stock por FIFO al confirmar. Una barra se llena a medida que
+  se reparten las viandas y, al confirmar, un aviso con confeti celebra el pedido.
 - Mis pedidos: historial con estado y total.
 - Seguimiento: linea de tiempo del pedido con fecha y responsable de cada cambio.
 

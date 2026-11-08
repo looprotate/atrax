@@ -30,5 +30,6 @@
 <script src="<?= url('assets/js/validaciones.js') ?>"></script>
 <script src="<?= url('assets/js/avisos.js') ?>"></script>
 <script src="<?= url('assets/js/esqueletos.js') ?>"></script>
+<script src="<?= url('assets/js/efectos.js') ?>"></script>
 </body>
 </html>

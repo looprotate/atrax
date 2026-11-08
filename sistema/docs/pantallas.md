@@ -89,7 +89,8 @@ atenuados y sin color. El boton **Armar pedido** lleva al formulario.
 
 Formulario del pedido (captura 18). Se elige la modalidad, la fecha de entrega
 (desde manana y hasta 60 dias) y cuantas viandas de cada plato; el contador
-"Viandas elegidas" se pone en verde cuando la suma coincide con la modalidad.
+"Viandas elegidas" y una barra de progreso se ponen en verde cuando la suma coincide con la
+modalidad, y cada plato elegido se marca en su fila.
 Al tocar **Confirmar pedido** se abre una ventana con el **resumen**: platos,
 subtotales, total, fecha y direccion (captura 27). Desde ahi se confirma o se
 vuelve a editar. Si faltan platos o la suma no coincide con el plan, un aviso lo

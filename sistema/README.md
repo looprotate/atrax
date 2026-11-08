@@ -88,7 +88,7 @@ atrax/
     operador/            pantallas del operador
     cliente/             pantallas del cliente
     assets/css/atrax.css estilos propios sobre Bootstrap
-    assets/img/          logo (logo.svg), icono reducido y favicon (icono.svg)
+    assets/img/          logo completo (logo.svg), usado tambien como favicon
     assets/js/validaciones.js  validaciones y ayudas del lado del cliente
     assets/js/avisos.js  pop ups: avisos flotantes y ventanas de confirmacion
     assets/js/esqueletos.js  esqueletos de carga al navegar entre pantallas

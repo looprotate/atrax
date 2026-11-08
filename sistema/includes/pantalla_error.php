@@ -10,7 +10,7 @@ $ruta     = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title><?= e($pantalla['titulo']) ?> — <?= APP_NOMBRE ?></title>
-<link rel="icon" type="image/svg+xml" href="<?= url('assets/img/icono.svg') ?>">
+<link rel="icon" type="image/svg+xml" href="<?= url('assets/img/logo.svg') ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?= url('assets/css/atrax.css') ?>">
 </head>
@@ -123,7 +123,7 @@ $ruta     = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
   <?php endif; ?>
 
   <footer class="error-pie">
-    <img src="<?= url('assets/img/icono.svg') ?>" alt="" width="32" height="32">
+    <img src="<?= url('assets/img/logo.svg') ?>" alt="" width="32" height="32">
     <nav aria-label="Enlaces de ayuda">
       <a href="<?= url('index.php') ?>">Inicio</a>
       <span aria-hidden="true">—</span>

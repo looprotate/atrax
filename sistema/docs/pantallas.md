@@ -29,7 +29,7 @@ segunda entrega ([`wireframes/`](../../wireframes)).
 
 ## Elementos comunes
 
-- **Barra superior** (azul marino): logo y nombre, secciones del rol (el cliente y
+- **Barra superior** (azul marino): logo completo (el mismo del inicio de sesion y del icono de la pestana) y nombre, secciones del rol (el cliente y
   el operador las ven como pildoras; el administrador tiene un menu lateral que en
   pantallas angostas se abre con el boton ☰), nombre del usuario y boton **Salir**,
   que pide confirmacion antes de cerrar la sesion.

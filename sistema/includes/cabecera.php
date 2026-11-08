@@ -18,7 +18,7 @@ $listaErrores = errores();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($titulo) ?> — <?= APP_NOMBRE ?></title>
-<link rel="icon" type="image/svg+xml" href="<?= url('assets/img/icono.svg') ?>">
+<link rel="icon" type="image/svg+xml" href="<?= url('assets/img/logo.svg') ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?= url('assets/css/atrax.css') ?>">
 </head>
@@ -34,7 +34,7 @@ $listaErrores = errores();
     <?php endif; ?>
 
     <a class="atrax-marca" href="<?= url(panel_de($rol)) ?>">
-      <img class="atrax-logo" src="<?= url('assets/img/icono.svg') ?>" alt="" width="34" height="34">
+      <img class="atrax-logo" src="<?= url('assets/img/logo.svg') ?>" alt="" width="40" height="40">
       <span><?= APP_NOMBRE ?></span>
     </a>
 

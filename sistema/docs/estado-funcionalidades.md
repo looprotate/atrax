@@ -28,6 +28,21 @@ con una solucion distinta a la del diseno; **No implementado** = fuera de esta e
 | RF15 | Notificaciones ante cambios de estado | No implementado | Ver abajo |
 | RF16 | Bitacora de auditoria | Parcial | Hay trazabilidad de estados de pedido y de movimientos de stock; faltan los cambios sobre usuarios, zonas, vehiculos y precios |
 
+## Requisitos de la tarea fullstack
+
+Lo que pide el listado de tareas del curso (HTML/CSS, PHP y base de datos, programacion
+orientada a objetos, JavaScript asincrono y pruebas) y como quedo cada punto.
+
+| Punto | Estado | Justificacion |
+|---|---|---|
+| Consulta asincrona con `fetch()` y JSON | Implementado | `admin/pedidos.php` pide los pedidos a `api/pedidos.php` con `fetch()` y rehace la tabla sin recargar; maneja carga, errores (red, tiempo, sesion vencida, servidor) y reintento |
+| Busqueda y filtros dinamicos | Implementado | Buscador por cliente o numero de pedido, mas filtros por estado y zona, con la direccion sincronizada; sin JavaScript sigue funcionando como una busqueda normal |
+| Limite de intentos de ingreso | Implementado | Cinco fallos del mismo usuario (o veinte de la misma direccion) en 10 minutos bloquean el ingreso hasta que pase ese tiempo; tabla `intentos_acceso` |
+| Eliminacion de registros | Modificado | No hay `DELETE` desde la interfaz: usuarios, zonas, vehiculos y platos se desactivan, y los pedidos se cancelan, para no perder el historial |
+| Manejo de archivos | Modificado | Solo las fotos estaticas de los platos (`assets/img/platos/`); no hay carga de archivos por parte del usuario |
+| Programacion orientada a objetos | No implementado | El modelo es procedural: una funcion por consulta, con PDO. La unica clase es la excepcion `StockInsuficiente`. No hay entidades ni repositorios como clases |
+| Pruebas de caja negra y blanca, informe de defectos | Implementado | [Caja negra](pruebas-caja-negra.md), [caja blanca](pruebas-caja-blanca.md) e [informe de defectos](informe-de-defectos.md); los 13 defectos que encontraron estan corregidos y verificados |
+
 ## Casos puntuales
 
 ### Notificaciones (RF15)

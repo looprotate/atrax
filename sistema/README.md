@@ -116,6 +116,7 @@ responde JSON. Ningun archivo de presentacion escribe SQL.
 - [Base de datos](docs/base-de-datos.md)
 - [Flujos de navegacion](docs/flujo-navegacion.md)
 - [Pruebas](docs/pruebas.md) · [salida de consola](docs/pruebas-consola.txt) · [capturas](docs/capturas)
+- [Estado final de funcionalidades](docs/estado-funcionalidades.md)
 - [Pruebas de caja negra](docs/pruebas-caja-negra.md) · [pruebas de caja blanca](docs/pruebas-caja-blanca.md) · [informe de defectos](docs/informe-de-defectos.md)
 
 ## Funcionalidades implementadas
@@ -193,6 +194,8 @@ responde JSON. Ningun archivo de presentacion escribe SQL.
 - Mapa de zonas y mapa de seguimiento del reparto: en los disenos aparecen como
   mapa; en esta version se resuelven con listados y una linea de tiempo.
 - Recuperacion de contrasena y edicion del perfil del cliente.
+- Programacion orientada a objetos: el modelo es procedural (una funcion por consulta) y la
+  unica clase es la excepcion `StockInsuficiente`.
 - Exportacion de reportes a PDF o Excel desde Estadisticas.
 - Asignacion de pedidos a vehiculos arrastrando (drag and drop): se resolvio con
   un selector, que hace la misma operacion con validacion del lado del servidor.

@@ -19,6 +19,22 @@ function bd(): PDO
     return $conexion;
 }
 
+function en_transaccion(callable $trabajo)
+{
+    $conexion = bd();
+    $conexion->beginTransaction();
+
+    try {
+        $resultado = $trabajo();
+        $conexion->commit();
+
+        return $resultado;
+    } catch (Throwable $error) {
+        $conexion->rollBack();
+        throw $error;
+    }
+}
+
 function consultar(string $sql, array $parametros = []): array
 {
     $sentencia = bd()->prepare($sql);

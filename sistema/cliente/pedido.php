@@ -43,8 +43,14 @@ require __DIR__ . '/../includes/cabecera.php';
                 <?php $disponible = (int) $producto['disponible']; ?>
                 <tr>
                   <td>
-                    <span class="fw-semibold"><?= e($producto['nombre']) ?></span><br>
-                    <span class="small text-secondary"><?= e($producto['descripcion']) ?></span>
+                    <div class="d-flex align-items-center gap-3">
+                      <img class="plato-miniatura" src="<?= e(imagen_plato($producto['imagen'])) ?>" alt=""
+                           width="64" height="48" loading="lazy">
+                      <div>
+                        <span class="fw-semibold"><?= e($producto['nombre']) ?></span><br>
+                        <span class="small text-secondary"><?= e($producto['descripcion']) ?></span>
+                      </div>
+                    </div>
                   </td>
                   <td><?= moneda($producto['precio']) ?></td>
                   <td>

@@ -10,7 +10,7 @@ $ruta     = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title><?= e($pantalla['titulo']) ?> — <?= APP_NOMBRE ?></title>
-<link rel="icon" type="image/svg+xml" href="<?= url('assets/img/icono.svg') ?>">
+<link rel="icon" type="image/svg+xml" href="<?= url('assets/img/logo.svg') ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?= url('assets/css/atrax.css') ?>">
 </head>
@@ -123,7 +123,7 @@ $ruta     = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
   <?php endif; ?>
 
   <footer class="error-pie">
-    <img src="<?= url('assets/img/icono.svg') ?>" alt="" width="32" height="32">
+    <img src="<?= url('assets/img/logo.svg') ?>" alt="" width="32" height="32">
     <nav aria-label="Enlaces de ayuda">
       <a href="<?= url('index.php') ?>">Inicio</a>
       <span aria-hidden="true">—</span>
@@ -135,28 +135,6 @@ $ruta     = (string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
   </footer>
 </main>
 
-<script>
-(function () {
-  var volver = document.querySelector('[data-volver]');
-  if (volver) {
-    if (window.history.length < 2) volver.hidden = true;
-    volver.addEventListener('click', function () { window.history.back(); });
-  }
-
-  var reintentar = document.querySelector('[data-reintentar]');
-  var cuenta = document.querySelector('[data-cuenta]');
-  if (reintentar) {
-    reintentar.addEventListener('click', function () { window.location.reload(); });
-  }
-  if (cuenta) {
-    var segundos = parseInt(cuenta.textContent, 10);
-    setInterval(function () {
-      segundos -= 1;
-      if (segundos <= 0) window.location.reload();
-      cuenta.textContent = Math.max(segundos, 0);
-    }, 1000);
-  }
-})();
-</script>
+<script src="<?= url('assets/js/pantalla_error.js') ?>"></script>
 </body>
 </html>

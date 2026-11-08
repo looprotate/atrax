@@ -51,7 +51,7 @@ echo "  cliente -> operador/stock.php: $(curl -s -o /dev/null -w '%{http_code}' 
 titulo "P06 Logout"
 CKA=$(entrar admin Admin123)
 echo "  con sesion: $(curl -s -o /dev/null -w '%{http_code}' -b $CKA $BASE/admin/index.php)"
-curl -s -o /dev/null -b $CKA -c $CKA $BASE/logout.php
+curl -s -o /dev/null -b $CKA -c $CKA -X POST --data-urlencode "token=$(tok $CKA $BASE/admin/index.php)" $BASE/logout.php
 echo "  tras logout: $(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' -b $CKA $BASE/admin/index.php)"
 
 titulo "P07 Token CSRF invalido"

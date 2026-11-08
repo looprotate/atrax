@@ -2,17 +2,21 @@
 
 require_once __DIR__ . '/../includes/conexion.php';
 
+class StockInsuficiente extends RuntimeException
+{
+}
+
 function stock_por_producto(): array
 {
     return consultar(
-        'SELECT p.id, p.nombre, p.descripcion, p.precio, p.stock_minimo, p.activo,
+        'SELECT p.id, p.nombre, p.descripcion, p.precio, p.stock_minimo, p.imagen, p.activo,
                 COALESCE(SUM(l.disponible), 0) AS disponible
          FROM productos p
          LEFT JOIN lotes l
                 ON l.producto_id = p.id
                AND l.estado = "Disponible"
                AND l.fecha_vencimiento >= CURDATE()
-         GROUP BY p.id, p.nombre, p.descripcion, p.precio, p.stock_minimo, p.activo
+         GROUP BY p.id, p.nombre, p.descripcion, p.precio, p.stock_minimo, p.imagen, p.activo
          ORDER BY p.nombre'
     );
 }
@@ -59,12 +63,12 @@ function listar_lotes(bool $soloDisponibles = false): array
     return consultar($sql . ' ORDER BY l.fecha_vencimiento, l.fecha_produccion, l.id');
 }
 
-function lote_por_id(int $id): ?array
+function lote_por_id(int $id, bool $bloquear = false): ?array
 {
     return consultarFila(
         'SELECT l.id, l.numero_lote, l.producto_id, l.cantidad, l.disponible, l.estado, p.nombre AS producto
          FROM lotes l INNER JOIN productos p ON p.id = l.producto_id
-         WHERE l.id = ?',
+         WHERE l.id = ?' . ($bloquear ? ' FOR UPDATE' : ''),
         [$id]
     );
 }
@@ -107,12 +111,15 @@ function crear_lote(int $productoId, int $operadorId, string $numero, string $fe
     return $loteId;
 }
 
+// Dentro de una transaccion, FOR UPDATE deja a los demas pedidos esperando hasta que esta termine,
+// asi dos pedidos simultaneos no leen el mismo disponible ni se pisan al escribirlo.
 function lotes_fifo(int $productoId): array
 {
     return consultar(
         'SELECT id, numero_lote, disponible FROM lotes
          WHERE producto_id = ? AND estado = "Disponible" AND disponible > 0 AND fecha_vencimiento >= CURDATE()
-         ORDER BY fecha_vencimiento, fecha_produccion, id',
+         ORDER BY fecha_vencimiento, fecha_produccion, id
+         FOR UPDATE',
         [$productoId]
     );
 }
@@ -139,7 +146,7 @@ function descontar_fifo(int $productoId, int $cantidad, int $usuarioId, int $ped
     }
 
     if ($restante > 0) {
-        throw new RuntimeException('Stock insuficiente para completar el pedido.');
+        throw new StockInsuficiente('Stock insuficiente para completar el pedido.');
     }
 }
 
@@ -147,21 +154,25 @@ function ajustar_lote(int $loteId, int $usuarioId, string $tipo, int $cantidad, 
 {
     $queda = $tipo === 'Salida' ? $disponibleActual - $cantidad : $disponibleActual + $cantidad;
 
-    ejecutar(
-        'UPDATE lotes SET disponible = ?, estado = ? WHERE id = ?',
-        [$queda, $queda === 0 ? 'Agotado' : 'Disponible', $loteId]
-    );
+    en_transaccion(function () use ($loteId, $usuarioId, $tipo, $cantidad, $motivo, $queda) {
+        ejecutar(
+            'UPDATE lotes SET disponible = ?, estado = ? WHERE id = ?',
+            [$queda, $queda === 0 ? 'Agotado' : 'Disponible', $loteId]
+        );
 
-    registrar_movimiento($loteId, $usuarioId, $tipo, $cantidad, $motivo);
+        registrar_movimiento($loteId, $usuarioId, $tipo, $cantidad, $motivo);
+    });
 }
 
 function descartar_lote(int $loteId, int $usuarioId, int $disponible): void
 {
-    ejecutar('UPDATE lotes SET disponible = 0, estado = "Descartado" WHERE id = ?', [$loteId]);
+    en_transaccion(function () use ($loteId, $usuarioId, $disponible) {
+        ejecutar('UPDATE lotes SET disponible = 0, estado = "Descartado" WHERE id = ?', [$loteId]);
 
-    if ($disponible > 0) {
-        registrar_movimiento($loteId, $usuarioId, 'Salida', $disponible, 'Lote descartado por vencimiento');
-    }
+        if ($disponible > 0) {
+            registrar_movimiento($loteId, $usuarioId, 'Salida', $disponible, 'Lote descartado por vencimiento');
+        }
+    });
 }
 
 function ultimos_movimientos(int $limite = 12): array

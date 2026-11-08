@@ -29,10 +29,10 @@ segunda entrega ([`wireframes/`](../../wireframes)).
 
 ## Elementos comunes
 
-- **Barra superior** (azul marino): logo y nombre, secciones del rol (el cliente y
+- **Barra superior** (azul marino): logo completo (el mismo del inicio de sesion y del icono de la pestana) y nombre, secciones del rol (el cliente y
   el operador las ven como pildoras; el administrador tiene un menu lateral que en
   pantallas angostas se abre con el boton ☰), nombre del usuario y boton **Salir**,
-  que pide confirmacion antes de cerrar la sesion.
+  que pide confirmacion y cierra la sesion con un `POST` con token.
 - **Avisos emergentes**: el resultado de cada accion aparece arriba a la derecha.
   Los avisos de exito (verde) se cierran solos a los 5 segundos; los de error
   (rojo) quedan hasta que se cierran con la ✕ y enumeran cada dato a corregir.
@@ -64,7 +64,9 @@ segunda entrega ([`wireframes/`](../../wireframes)).
 Entrada al sistema (capturas 01 y 24). Se ingresa con el **usuario o el correo**
 y la contrasena (el boton **ver** la muestra). Si los datos son correctos se abre
 el panel del rol con un aviso de bienvenida; si no, aparece el aviso "Usuario o
-contrasena incorrectos" (captura 02). Una cuenta desactivada no puede entrar.
+contrasena incorrectos" (captura 02). Una cuenta desactivada no puede entrar. Despues de
+5 intentos fallidos con el mismo usuario en 10 minutos (o 20 desde la misma direccion) el sistema avisa
+"Demasiados intentos fallidos" y no prueba mas contrasenas hasta que pase ese tiempo.
 Si la base de datos no responde, en lugar del formulario se muestra la pantalla
 de servidores caidos. Debajo estan las cuentas de prueba y el acceso a crear
 cuenta.
@@ -82,14 +84,15 @@ registrados. Al terminar vuelve al login con el aviso "Cuenta creada".
 
 Pantalla inicial del cliente (capturas 17 y 22). Muestra la zona y direccion de
 entrega, las **modalidades** (Semanal 5, Quincenal 10 y Mensual 20 viandas) y los
-**platos** con precio y disponibilidad real segun el stock; los agotados se ven
-atenuados. El boton **Armar pedido** lleva al formulario.
+**platos** con su foto, precio y disponibilidad real segun el stock; los agotados se ven
+atenuados y sin color. El boton **Armar pedido** lleva al formulario.
 
 ### Armar pedido
 
 Formulario del pedido (captura 18). Se elige la modalidad, la fecha de entrega
 (desde manana y hasta 60 dias) y cuantas viandas de cada plato; el contador
-"Viandas elegidas" se pone en verde cuando la suma coincide con la modalidad.
+"Viandas elegidas" y una barra de progreso se ponen en verde cuando la suma coincide con la
+modalidad, y cada plato elegido se marca en su fila.
 Al tocar **Confirmar pedido** se abre una ventana con el **resumen**: platos,
 subtotales, total, fecha y direccion (captura 27). Desde ahi se confirma o se
 vuelve a editar. Si faltan platos o la suma no coincide con el plan, un aviso lo
@@ -160,8 +163,13 @@ acumulada.
 
 ### Pedidos (administrador)
 
-Consulta de todos los pedidos (captura 05) con filtros por estado y zona y el
-vehiculo asignado a cada uno. **Ver** abre el detalle: plan, zona, direccion,
+Consulta de todos los pedidos (captura 05) con busqueda por cliente o numero de pedido,
+filtros por estado y zona y el vehiculo asignado a cada uno. La lista se actualiza **sin recargar la
+pagina**: al escribir en el buscador (con una pequena espera) o al cambiar un filtro, el navegador pide
+los pedidos a `api/pedidos.php` con `fetch()` y rehace la tabla con el JSON que recibe. Mientras espera muestra
+"Cargando pedidos...", al terminar cuenta cuantos encontro y si algo falla (sin conexion, sesion vencida o un error del
+servidor) avisa con un mensaje y un boton **Reintentar**. El boton **Filtrar** y la direccion con filtros
+(`?estado=...&buscar=...`) siguen funcionando sin JavaScript. **Ver** abre el detalle: plan, zona, direccion,
 fechas de pedido y de entrega, estado, total y los platos con sus subtotales.
 
 ### Stock minimo

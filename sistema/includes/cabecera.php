@@ -10,6 +10,7 @@ $menu  = menu_de($rol);
 $yo    = usuario();
 $exito = flash_leer('exito');
 $exitoTitulo = flash_leer('exito_titulo', 'Listo');
+$celebrar = (bool) flash_leer('celebrar');
 $listaErrores = errores();
 ?>
 <!DOCTYPE html>
@@ -18,9 +19,10 @@ $listaErrores = errores();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($titulo) ?> — <?= APP_NOMBRE ?></title>
-<link rel="icon" type="image/svg+xml" href="<?= url('assets/img/icono.svg') ?>">
+<link rel="icon" type="image/svg+xml" href="<?= url('assets/img/logo.svg') ?>">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?= url('assets/css/atrax.css') ?>">
+<link rel="stylesheet" href="<?= url('assets/css/efectos.css') ?>">
 </head>
 <body class="rol-<?= e($rol ?: 'publico') ?>">
 <?php if (autenticado()): ?>
@@ -34,7 +36,7 @@ $listaErrores = errores();
     <?php endif; ?>
 
     <a class="atrax-marca" href="<?= url(panel_de($rol)) ?>">
-      <img class="atrax-logo" src="<?= url('assets/img/icono.svg') ?>" alt="" width="34" height="34">
+      <img class="atrax-logo" src="<?= url('assets/img/logo.svg') ?>" alt="" width="40" height="40">
       <span><?= APP_NOMBRE ?></span>
     </a>
 
@@ -49,9 +51,12 @@ $listaErrores = errores();
     <div class="ms-auto d-flex align-items-center gap-2">
       <span class="d-none d-sm-inline atrax-usuario small"><?= e($yo['nombre']) ?> · <?= e($rol) ?></span>
       <span class="atrax-avatar" aria-hidden="true"><?= e($yo['inicial']) ?></span>
-      <a class="btn btn-sm btn-outline-light" href="<?= url('logout.php') ?>"
-         data-confirmar="Vas a salir de <?= APP_NOMBRE ?>. Para volver a entrar vas a necesitar tu usuario y contrasena."
-         data-confirmar-titulo="Cerrar sesion?" data-confirmar-boton="Salir">Salir</a>
+      <form action="<?= url('logout.php') ?>" method="post"
+            data-confirmar="Vas a salir de <?= APP_NOMBRE ?>. Para volver a entrar vas a necesitar tu usuario y contrasena."
+            data-confirmar-titulo="Cerrar sesion?" data-confirmar-boton="Salir">
+        <?= campo_token() ?>
+        <button class="btn btn-sm btn-outline-light" type="submit">Salir</button>
+      </form>
     </div>
   </div>
 </header>
@@ -96,7 +101,7 @@ $listaErrores = errores();
 
 <div class="atrax-toasts" aria-live="polite" data-avisos>
   <?php if ($exito): ?>
-    <div class="toast show vs-toast exito" role="status" aria-atomic="true" data-bs-delay="5000">
+    <div class="toast show vs-toast exito" role="status" aria-atomic="true" data-bs-delay="5000"<?= $celebrar ? ' data-celebrar' : '' ?>>
       <span class="vs-toast-icono" aria-hidden="true">&#10003;</span>
       <div class="vs-toast-cuerpo">
         <p class="vs-toast-titulo"><?= e($exitoTitulo) ?></p>

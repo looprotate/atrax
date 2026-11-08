@@ -45,15 +45,19 @@ require __DIR__ . '/../includes/cabecera.php';
     <?php foreach ($productos as $producto): ?>
       <?php $agotado = (int) $producto['disponible'] <= 0; ?>
       <div class="col-md-6 col-xl-4">
-        <article class="tarjeta<?= $agotado ? ' agotado' : '' ?>">
-          <div class="d-flex justify-content-between align-items-start mb-1">
-            <h3 class="h6 mb-0"><?= e($producto['nombre']) ?></h3>
-            <span class="etiqueta <?= $agotado ? 'peligro' : 'ok' ?>">
-              <?= $agotado ? 'agotado hoy' : (int) $producto['disponible'] . ' disp.' ?>
-            </span>
+        <article class="tarjeta tarjeta-plato<?= $agotado ? ' agotado' : '' ?>">
+          <img class="plato-foto" src="<?= e(imagen_plato($producto['imagen'])) ?>" alt="<?= e($producto['nombre']) ?>"
+               width="800" height="600" loading="lazy">
+          <div class="plato-cuerpo">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <h3 class="h6 mb-0"><?= e($producto['nombre']) ?></h3>
+              <span class="etiqueta <?= $agotado ? 'peligro' : 'ok' ?>">
+                <?= $agotado ? 'agotado hoy' : (int) $producto['disponible'] . ' disp.' ?>
+              </span>
+            </div>
+            <p class="tarjeta-pie"><?= e($producto['descripcion']) ?></p>
+            <p class="fw-semibold mb-0"><?= moneda($producto['precio']) ?> por vianda</p>
           </div>
-          <p class="tarjeta-pie"><?= e($producto['descripcion']) ?></p>
-          <p class="fw-semibold mb-0"><?= moneda($producto['precio']) ?> por vianda</p>
         </article>
       </div>
     <?php endforeach; ?>

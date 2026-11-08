@@ -1,7 +1,12 @@
-# Cualquier direccion que no sea un archivo existente ni una carpeta con index.php
-# muestra la pantalla 404 de ViandaSegura (tambien evita listar carpetas internas).
+# Las carpetas que no son paginas y los archivos de datos o documentos nunca se sirven: responden 403.
+# El script de la base trae las cuentas de ejemplo y los documentos listan usuarios de prueba.
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteRule ^(bd|docs|includes|modelo)(/|$) - [F,L]
+  RewriteRule \.(sql|md|sh|txt)$ - [F,L]
+
+  # Cualquier otra direccion que no sea un archivo existente ni una carpeta con index.php
+  # muestra la pantalla 404 de ViandaSegura (tambien evita listar carpetas internas).
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME}/index.php !-f
   RewriteRule ^ 404.php [L]

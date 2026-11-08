@@ -59,14 +59,14 @@ atrax/
   sistema/               sistema funcional de la tercera entrega
     index.php            entrada: redirige al panel segun el rol
     404.php              pantalla de pagina no encontrada
-    .htaccess            envia las direcciones inexistentes a 404.php
+    .htaccess            bloquea bd/, docs/ y archivos internos (403) y envia las direcciones inexistentes a 404.php
     login.php            inicio de sesion
     registro.php         alta de clientes
     logout.php           cierre de sesion
     includes/            infraestructura comun
       config.php         datos de conexion y constantes
-      conexion.php       PDO + funciones de consulta preparada
-      funciones.php      escape, validaciones, mensajes, token CSRF
+      conexion.php       PDO, funciones de consulta preparada y en_transaccion()
+      funciones.php      escape, validaciones, mensajes, token CSRF, respuestas JSON y cabeceras de seguridad
       auth.php           sesion, roles y guardas de acceso
       cabecera.php       encabezado, navegacion y mensajes
       pie.php            cierre de pagina y scripts
@@ -75,6 +75,7 @@ atrax/
       pantalla_error.php plantilla de las pantallas de error
     modelo/              acceso a datos (una funcion por consulta)
       usuarios.php       usuarios, roles y clientes
+      accesos.php        ingresos fallidos y bloqueo temporal
       zonas.php          zonas y vehiculos
       catalogo.php       productos y planes
       stock.php          lotes, movimientos y FIFO
@@ -84,14 +85,20 @@ atrax/
       productos.php  planes.php  stock_minimo.php  usuarios.php
       produccion.php  stock.php  pedidos.php  distribucion.php
       pedido_cliente.php
+    api/                 consultas asincronas: devuelven JSON (pedidos.php)
     admin/               pantallas del administrador
     operador/            pantallas del operador
     cliente/             pantallas del cliente
     assets/css/atrax.css estilos propios sobre Bootstrap
-    assets/img/          logo (logo.svg), icono reducido y favicon (icono.svg)
+    assets/css/efectos.css transiciones y animaciones (respetan prefers-reduced-motion)
+    assets/img/          logo completo (logo.svg), usado tambien como favicon
+    assets/img/platos/   foto de cada plato, imagen de reemplazo y creditos de las fotos
     assets/js/validaciones.js  validaciones y ayudas del lado del cliente
     assets/js/avisos.js  pop ups: avisos flotantes y ventanas de confirmacion
     assets/js/esqueletos.js  esqueletos de carga al navegar entre pantallas
+    assets/js/efectos.js  numeros que suben, barra de viandas y confeti al confirmar un pedido
+    assets/js/pedidos_en_vivo.js  filtro y busqueda de pedidos con fetch(), sin recargar
+    assets/js/pantalla_error.js  boton volver y reintento automatico de las pantallas de error
     bd/atrax.sql         estructura + datos de prueba
     docs/                documentacion, pruebas y capturas
 ```
@@ -99,7 +106,8 @@ atrax/
 La separacion es: las paginas (`admin/`, `operador/`, `cliente/`) solo arman la
 presentacion y hacen consultas de lectura a traves de `modelo/`; toda la escritura
 pasa por `acciones/`, que valida en el servidor y vuelve a la pagina con el
-resultado. Ningun archivo de presentacion escribe SQL.
+resultado, y las consultas que la pantalla pide sin recargar pasan por `api/`, que
+responde JSON. Ningun archivo de presentacion escribe SQL.
 
 ## Documentacion
 
@@ -108,6 +116,8 @@ resultado. Ningun archivo de presentacion escribe SQL.
 - [Base de datos](docs/base-de-datos.md)
 - [Flujos de navegacion](docs/flujo-navegacion.md)
 - [Pruebas](docs/pruebas.md) · [salida de consola](docs/pruebas-consola.txt) · [capturas](docs/capturas)
+- [Estado final de funcionalidades](docs/estado-funcionalidades.md)
+- [Pruebas de caja negra](docs/pruebas-caja-negra.md) · [pruebas de caja blanca](docs/pruebas-caja-blanca.md) · [informe de defectos](docs/informe-de-defectos.md)
 
 ## Funcionalidades implementadas
 
@@ -116,7 +126,11 @@ resultado. Ningun archivo de presentacion escribe SQL.
 - Login con usuario o correo, validacion contra la base, identificacion del rol,
   creacion de sesion y redireccion al panel correspondiente.
 - Registro autonomo de clientes con validacion de datos y control de duplicados.
-- Cierre de sesion con destruccion de la sesion y de su cookie.
+- Cierre de sesion con destruccion de la sesion y de su cookie, solo por `POST` con token.
+- Bloqueo temporal despues de 5 ingresos fallidos del mismo usuario (o 20 de la misma
+  direccion) en 10 minutos.
+- Cabeceras de seguridad (`Content-Security-Policy`, `X-Frame-Options`,
+  `X-Content-Type-Options`, `Referrer-Policy`).
 - Bloqueo de pantallas no autorizadas (403) y de acciones no autorizadas.
 - Esqueletos de carga: al pasar de una pantalla a otra o enviar un formulario, el
   contenido se reemplaza por un esqueleto (placeholders de Bootstrap 5) con la forma
@@ -131,10 +145,17 @@ resultado. Ningun archivo de presentacion escribe SQL.
   delicadas piden confirmacion en una ventana (cerrar sesion, desactivar usuarios,
   quitar pedidos de un vehiculo, cancelar pedidos y descartar lotes).
 
+- Interfaz con movimiento: las pantallas entran con una animacion escalonada, los numeros
+  de las tarjetas suben hasta su valor, las tarjetas y los botones reaccionan al mouse y el
+  paso actual del seguimiento late. Con "reducir movimiento" activado en el sistema todo
+  esto se desactiva.
+
 **Administrador**
 
 - Dashboard con pedidos del dia, viandas a producir, viandas en reparto y alertas.
-- Consulta de pedidos con filtros por estado y zona, y detalle de cada pedido.
+- Consulta de pedidos con busqueda por cliente o numero y filtros por estado y zona que se
+  actualizan sin recargar la pagina (`fetch()` a `api/pedidos.php`, que responde JSON), y
+  detalle de cada pedido.
 - Configuracion del stock minimo por plato (alta el disparador de las alertas).
 - Menus y precios: precio y disponibilidad de cada plato, alta de platos nuevos
   y cantidad de viandas de cada modalidad.
@@ -154,10 +175,12 @@ resultado. Ningun archivo de presentacion escribe SQL.
 
 **Cliente**
 
-- Menu con las modalidades y los platos disponibles segun el stock real.
+- Menu con las modalidades y los platos disponibles segun el stock real, cada uno con su
+  foto (los agotados se ven en gris).
 - Armado de pedido: eleccion de modalidad, fecha de entrega y cantidades por plato,
   con un resumen en ventana emergente (platos, subtotales y total) antes de
-  confirmar y descuento del stock por FIFO al confirmar.
+  confirmar y descuento del stock por FIFO al confirmar. Una barra se llena a medida que
+  se reparten las viandas y, al confirmar, un aviso con confeti celebra el pedido.
 - Mis pedidos: historial con estado y total.
 - Seguimiento: linea de tiempo del pedido con fecha y responsable de cada cambio.
 
@@ -171,6 +194,8 @@ resultado. Ningun archivo de presentacion escribe SQL.
 - Mapa de zonas y mapa de seguimiento del reparto: en los disenos aparecen como
   mapa; en esta version se resuelven con listados y una linea de tiempo.
 - Recuperacion de contrasena y edicion del perfil del cliente.
+- Programacion orientada a objetos: el modelo es procedural (una funcion por consulta) y la
+  unica clase es la excepcion `StockInsuficiente`.
 - Exportacion de reportes a PDF o Excel desde Estadisticas.
 - Asignacion de pedidos a vehiculos arrastrando (drag and drop): se resolvio con
   un selector, que hace la misma operacion con validacion del lado del servidor.

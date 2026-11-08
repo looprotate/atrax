@@ -49,6 +49,12 @@ function listar_pedidos(array $filtros = []): array
         $parametros[] = $filtros['cliente_id'];
     }
 
+    if (!empty($filtros['buscar'])) {
+        $sql .= ' AND (u.nombre LIKE ? OR p.id = ?)';
+        $parametros[] = '%' . addcslashes($filtros['buscar'], '%_\\') . '%';
+        $parametros[] = (int) ltrim($filtros['buscar'], '#');
+    }
+
     if (!empty($filtros['hoy'])) {
         $sql .= ' AND p.fecha_entrega = CURDATE()';
     }
@@ -104,10 +110,11 @@ function historial_pedido(int $pedidoId): array
 
 function crear_pedido(int $clienteId, int $planId, int $zonaId, string $fechaEntrega, array $lineas, int $usuarioId): int
 {
-    $conexion = bd();
-    $conexion->beginTransaction();
+    // Los productos se toman siempre en el mismo orden para que dos pedidos con los mismos platos
+    // no se esperen entre si (bloqueo mutuo).
+    usort($lineas, fn (array $a, array $b) => $a['producto_id'] <=> $b['producto_id']);
 
-    try {
+    return en_transaccion(function () use ($clienteId, $planId, $zonaId, $fechaEntrega, $lineas, $usuarioId) {
         $total   = 0.0;
         $viandas = 0;
 
@@ -138,15 +145,12 @@ function crear_pedido(int $clienteId, int $planId, int $zonaId, string $fechaEnt
             [$pedidoId, $usuarioId]
         );
 
-        $conexion->commit();
-
         return $pedidoId;
-    } catch (Throwable $error) {
-        $conexion->rollBack();
-        throw $error;
-    }
+    });
 }
 
+// Devuelve a cada lote lo que ese pedido le saco, sin pasar de la cantidad que produjo el lote:
+// si alguien ya repuso el lote con un ajuste, esas viandas no se cuentan dos veces.
 function devolver_stock(int $pedidoId, int $usuarioId): void
 {
     $salidas = consultar(
@@ -155,25 +159,35 @@ function devolver_stock(int $pedidoId, int $usuarioId): void
     );
 
     foreach ($salidas as $salida) {
-        $lote = lote_por_id((int) $salida['lote_id']);
+        $lote = lote_por_id((int) $salida['lote_id'], true);
 
         if ($lote === null || $lote['estado'] === 'Descartado') {
             continue;
         }
 
-        $queda = (int) $lote['disponible'] + (int) $salida['cantidad'];
+        $devolver = min((int) $salida['cantidad'], (int) $lote['cantidad'] - (int) $lote['disponible']);
 
-        ejecutar('UPDATE lotes SET disponible = ?, estado = "Disponible" WHERE id = ?', [$queda, $lote['id']]);
-        registrar_movimiento((int) $lote['id'], $usuarioId, 'Entrada', (int) $salida['cantidad'], 'Devolucion por cancelacion del pedido #' . $pedidoId, $pedidoId);
+        if ($devolver <= 0) {
+            continue;
+        }
+
+        $motivo = 'Devolucion por cancelacion del pedido #' . $pedidoId;
+
+        if ($devolver < (int) $salida['cantidad']) {
+            $motivo .= ' (parcial: el lote ya habia sido repuesto)';
+        }
+
+        ejecutar(
+            'UPDATE lotes SET disponible = ?, estado = "Disponible" WHERE id = ?',
+            [(int) $lote['disponible'] + $devolver, $lote['id']]
+        );
+        registrar_movimiento((int) $lote['id'], $usuarioId, 'Entrada', $devolver, $motivo, $pedidoId);
     }
 }
 
 function cambiar_estado(int $pedidoId, string $estadoActual, string $estadoNuevo, int $usuarioId): void
 {
-    $conexion = bd();
-    $conexion->beginTransaction();
-
-    try {
+    en_transaccion(function () use ($pedidoId, $estadoActual, $estadoNuevo, $usuarioId) {
         ejecutar('UPDATE pedidos SET estado = ? WHERE id = ?', [$estadoNuevo, $pedidoId]);
 
         ejecutar(
@@ -185,12 +199,7 @@ function cambiar_estado(int $pedidoId, string $estadoActual, string $estadoNuevo
             devolver_stock($pedidoId, $usuarioId);
             ejecutar('UPDATE pedidos SET vehiculo_id = NULL WHERE id = ?', [$pedidoId]);
         }
-
-        $conexion->commit();
-    } catch (Throwable $error) {
-        $conexion->rollBack();
-        throw $error;
-    }
+    });
 }
 
 function asignar_vehiculo(int $pedidoId, ?int $vehiculoId): int

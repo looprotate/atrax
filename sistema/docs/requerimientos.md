@@ -46,16 +46,16 @@ necesita seguir; falta la bitacora de los cambios de parametrizacion.
 
 | ID | Requerimiento | Como se cumple en esta version |
 |---|---|---|
-| RNF1 | Seguridad | Contrasenas con `password_hash` (bcrypt), consultas con sentencias preparadas, token CSRF en cada formulario, cookie de sesion `HttpOnly` y `SameSite=Lax`, y regeneracion del identificador de sesion al entrar |
+| RNF1 | Seguridad | Contrasenas con `password_hash` (bcrypt), consultas con sentencias preparadas, token CSRF en cada formulario, cookie de sesion `HttpOnly` y `SameSite=Lax`, regeneracion del identificador de sesion al entrar, bloqueo temporal tras 5 ingresos fallidos, cierre de sesion solo por `POST` con token, cabeceras de seguridad (`Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) y `.htaccess` que no sirve `bd/`, `docs/` ni archivos `.sql`, `.md`, `.sh` o `.txt` |
 | RNF2 | Usabilidad | Navegacion fija por rol, mensajes de exito y de error en la misma pantalla, y formularios que conservan lo escrito cuando hay un error |
 | RNF3 | Escalabilidad | Zonas, vehiculos, platos, planes y stock minimo son datos, no codigo |
-| RNF4 | Mantenibilidad | Separacion en `includes` (infraestructura), `modelo` (datos), `acciones` (escritura) y paginas (presentacion) |
+| RNF4 | Mantenibilidad | Separacion en `includes` (infraestructura), `modelo` (datos), `acciones` (escritura), `api` (consultas JSON) y paginas (presentacion) |
 | RNF5 | Accesibilidad | HTML semantico (`header`, `nav`, `main`, `section`, `article`, `footer`), `label` asociado a cada campo, `aria-label` en los controles sin texto visible y textos alternativos en los mensajes |
 | RNF6 | Disponibilidad | Aplicacion sin estado en el servidor mas alla de la sesion; se puede reiniciar sin perder datos |
 | RNF7 | Rendimiento | Consultas agregadas resueltas en la base con indices sobre las claves primarias y foraneas |
 | RNF8 | Compatibilidad | Diseno responsivo con Bootstrap 5, verificado en 1440 px y en pantalla angosta |
 | RNF9 | Respaldo | La base se exporta e importa desde `bd/atrax.sql` |
-| RNF10 | Integridad de los datos | Claves foraneas, `UNIQUE` en usuario, correo, matricula, codigo y nombre de zona, `CHECK` sobre cantidades y precios, y transacciones en el alta de pedidos y en los cambios de estado |
+| RNF10 | Integridad de los datos | Claves foraneas, `UNIQUE` en usuario, correo, matricula, codigo y nombre de zona, `CHECK` sobre cantidades y precios, y transacciones (`en_transaccion()`) en el alta de pedidos, los cambios de estado y los movimientos de stock |
 | RNF11 | Trazabilidad | `pedido_estados` guarda cada cambio con fecha y responsable; `movimientos_stock` guarda cada entrada, salida y ajuste con su lote y su motivo |
 | RNF12 | Confiabilidad | Validacion en el servidor de todas las operaciones y transacciones que se revierten si algo falla |
 | RNF13 | Recuperacion ante fallos | El alta de pedidos y el cambio de estado usan `beginTransaction` y `rollBack` |

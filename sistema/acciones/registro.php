@@ -23,6 +23,8 @@ $errores     = [];
 
 if (mb_strlen($datos['nombre']) < 3) {
     $errores[] = 'El nombre debe tener al menos 3 caracteres.';
+} elseif (mb_strlen($datos['nombre']) > 100) {
+    $errores[] = 'El nombre no puede superar 100 caracteres.';
 }
 
 if (!preg_match('/^[A-Za-z0-9_.]{4,40}$/', $datos['usuario'])) {
@@ -43,6 +45,8 @@ if (!es_telefono($datos['telefono'])) {
 
 if (mb_strlen($datos['direccion']) < 5) {
     $errores[] = 'La direccion debe tener al menos 5 caracteres.';
+} elseif (mb_strlen($datos['direccion']) > 200) {
+    $errores[] = 'La direccion no puede superar 200 caracteres.';
 }
 
 if (!in_array($datos['tipo'], ['Particular', 'Empresa', 'Institucion'], true)) {
@@ -51,12 +55,16 @@ if (!in_array($datos['tipo'], ['Particular', 'Empresa', 'Institucion'], true)) {
 
 $zonaId = entero($datos['zona_id']);
 
-if ($zonaId === null || zona_por_id($zonaId) === null) {
+$zona = $zonaId === null ? null : zona_por_id($zonaId);
+
+if ($zona === null || (int) $zona['activa'] !== 1) {
     $errores[] = 'Selecciona una zona de entrega valida.';
 }
 
 if (mb_strlen($contrasena) < 8) {
     $errores[] = 'La contrasena debe tener al menos 8 caracteres.';
+} elseif (trim($contrasena) === '') {
+    $errores[] = 'La contrasena no puede estar formada solo por espacios.';
 }
 
 if ($contrasena !== $contrasena2) {

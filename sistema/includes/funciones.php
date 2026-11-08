@@ -26,10 +26,33 @@ function url(string $ruta = ''): string
     return base_url() . '/' . ltrim($ruta, '/');
 }
 
+function imagen_plato(?string $archivo): string
+{
+    $archivo = basename((string) $archivo);
+
+    if ($archivo === '' || !is_file(APP_RAIZ . '/assets/img/platos/' . $archivo)) {
+        $archivo = 'sin-imagen.svg';
+    }
+
+    return url('assets/img/platos/' . $archivo);
+}
+
 function redirigir(string $ruta): void
 {
     header('Location: ' . url($ruta));
     exit;
+}
+
+// Impide que otro sitio incruste las paginas, que el navegador adivine tipos de archivo y que se
+// ejecute codigo que no venga de este sitio o de la libreria Bootstrap.
+function enviar_cabeceras_seguridad(): void
+{
+    header('X-Frame-Options: DENY');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: same-origin');
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; "
+        . "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data:; "
+        . "frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
 }
 
 function campo(string $nombre, $porDefecto = ''): string
@@ -46,12 +69,12 @@ function entero($valor): ?int
 
 function es_email(string $valor): bool
 {
-    return filter_var($valor, FILTER_VALIDATE_EMAIL) !== false;
+    return mb_strlen($valor) <= 150 && filter_var($valor, FILTER_VALIDATE_EMAIL) !== false;
 }
 
 function es_telefono(string $valor): bool
 {
-    return preg_match('/^[0-9 +()-]{8,20}$/', $valor) === 1;
+    return preg_match('/^[0-9 +()-]{8,20}$/', $valor) === 1 && preg_match_all('/[0-9]/', $valor) >= 8;
 }
 
 function es_fecha(string $valor): bool
@@ -162,6 +185,15 @@ function validar_token(): void
         http_response_code(400);
         exit('Solicitud invalida.');
     }
+}
+
+function responder_json(int $codigo, array $datos): void
+{
+    http_response_code($codigo);
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    echo json_encode($datos, JSON_UNESCAPED_UNICODE);
+    exit;
 }
 
 function solo_post(): void

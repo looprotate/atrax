@@ -12,13 +12,14 @@ de prueba) esta en [`bd/atrax.sql`](../bd/atrax.sql).
 | `usuarios` | Datos comunes de todos los usuarios | `id` | `rol_id` -> `roles` | `usuario`, `email` |
 | `clientes` | Datos propios del cliente | `id` | `usuario_id` -> `usuarios`, `zona_id` -> `zonas` | `usuario_id` |
 | `vehiculos` | Flota de reparto y su capacidad | `id` | `zona_id` -> `zonas` | `matricula` |
-| `productos` | Platos del menu y su stock minimo | `id` | — | `nombre` |
+| `productos` | Platos del menu, su stock minimo y su foto (`imagen`, opcional) | `id` | — | `nombre` |
 | `planes` | Modalidades semanal, quincenal y mensual | `id` | — | `nombre` |
 | `lotes` | Produccion de un plato con su vencimiento | `id` | `producto_id` -> `productos`, `operador_id` -> `usuarios` | `numero_lote` |
 | `pedidos` | Pedido de un cliente | `id` | `cliente_id`, `plan_id`, `zona_id`, `vehiculo_id` | — |
 | `pedido_detalle` | Platos y cantidades de un pedido | `id` | `pedido_id` -> `pedidos`, `producto_id` -> `productos` | `pedido_id` + `producto_id` |
 | `pedido_estados` | Historial de cambios de estado | `id` | `pedido_id` -> `pedidos`, `usuario_id` -> `usuarios` | — |
 | `movimientos_stock` | Entradas, salidas y ajustes por lote | `id` | `lote_id` -> `lotes`, `usuario_id` -> `usuarios`, `pedido_id` -> `pedidos` | — |
+| `intentos_acceso` | Ingresos fallidos recientes, para limitar los intentos | `id` | — | — |
 
 ## Relaciones
 
@@ -42,6 +43,11 @@ roles 1 ── N usuarios 1 ── 1 clientes N ── 1 zonas
 - `Stock` del diccionario de datos no es una tabla: el stock disponible se calcula
   sumando `lotes.disponible` de los lotes vigentes. Asi no puede quedar desincronizado.
 
+- `intentos_acceso` no tiene claves foraneas a proposito: guarda lo que se escribio en el formulario de ingreso
+  (`identificador`, en minusculas) y la direccion (`direccion`), que puede ser de un usuario que no existe. Se
+  consulta por `(identificador, fecha)` y por `(direccion, fecha)`, y los registros de mas de un dia se borran al
+  guardar uno nuevo. Arranca vacia.
+
 ## Dominios cerrados (ENUM)
 
 | Tabla.campo | Valores |
@@ -60,6 +66,8 @@ quedan fuera de esta version porque ninguna pantalla los produce todavia.
 
 - `CHECK (capacidad > 0)` en `vehiculos`.
 - `CHECK (precio > 0)` y `CHECK (stock_minimo >= 0)` en `productos`.
+- `productos.imagen` guarda solo el nombre del archivo dentro de `assets/img/platos/`; si esta vacio
+  o el archivo no existe, el sistema muestra `sin-imagen.svg`.
 - `CHECK (viandas > 0)` en `planes`.
 - `CHECK (cantidad > 0)` y `CHECK (disponible >= 0 AND disponible <= cantidad)` en `lotes`.
 - `CHECK (cantidad > 0)` en `pedido_detalle` y en `movimientos_stock`.

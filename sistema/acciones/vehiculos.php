@@ -21,6 +21,8 @@ $actual    = $id > 0 ? vehiculo_por_id($id) : null;
 
 if (mb_strlen($nombre) < 3) {
     $errores[] = 'El nombre del vehiculo debe tener al menos 3 caracteres.';
+} elseif (mb_strlen($nombre) > 40) {
+    $errores[] = 'El nombre del vehiculo no puede superar 40 caracteres.';
 }
 
 if (!preg_match('/^[A-Z0-9 -]{5,15}$/', $matricula)) {

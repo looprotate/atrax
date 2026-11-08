@@ -3,6 +3,8 @@
 require_once __DIR__ . '/conexion.php';
 require_once __DIR__ . '/funciones.php';
 
+enviar_cabeceras_seguridad();
+
 if (APP_MANTENIMIENTO) {
     mostrar_error(503);
 }

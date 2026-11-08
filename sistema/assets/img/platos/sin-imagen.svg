@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="sin-imagen-titulo">
+  <title id="sin-imagen-titulo">Plato sin foto</title>
+  <rect width="800" height="600" fill="#162B4E"/>
+  <g fill="none" stroke="#D0B178" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="400" cy="300" r="120"/>
+    <circle cx="400" cy="300" r="74"/>
+    <path d="M232 220V380M212 220V270A20 20 0 0 0 252 270V220"/>
+    <path d="M568 220V380M568 220C540 240 540 300 568 320"/>
+  </g>
+</svg>

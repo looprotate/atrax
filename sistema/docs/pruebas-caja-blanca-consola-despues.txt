@@ -1,0 +1,194 @@
+Salida completa de docs/pruebas-caja-blanca.php y docs/pruebas-caja-blanca-concurrencia.php (segunda corrida, despues de corregir los defectos)
+
+Salida completa de docs/pruebas-caja-blanca.php
+Ejecutado el 08/11/2026 sobre la base de datos recien importada desde bd/atrax.sql
+PHP 8.2.35 - 10.11.19-MariaDB
+
+### includes/funciones.php
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-01 | `entero()` | valor valido: devuelve el numero | '42' | 42 | 42 | PASA |
+| CB-02 | `entero()` | filter_var devuelve false: devuelve null | '4.2' | null | null | PASA |
+| CB-03 | `entero()` | espacios alrededor: se aceptan | ' 7 ' | 7 | 7 | PASA |
+| CB-04 | `entero()` | desborda el entero: devuelve null | '99999999999999999999' | null | null | PASA |
+| CB-05 | `es_fecha()` | primer operando falso: no es una fecha | 'abc' | false | false | PASA |
+| CB-06 | `es_fecha()` | primero verdadero y segundo falso: la fecha se desborda | '2027-02-30' | false | false | PASA |
+| CB-07 | `es_fecha()` | primero verdadero y segundo falso: sin ceros | '2027-1-5' | false | false | PASA |
+| CB-08 | `es_fecha()` | ambos operandos verdaderos | '2027-12-31' | true | true | PASA |
+| CB-09 | `es_telefono()` | formato valido | '+598 99 123 456' | true | true | PASA |
+| CB-10 | `es_telefono()` | menos de 8 caracteres | '1234567' | false | false | PASA |
+| CB-11 | `es_telefono()` | letras | 'abcdefgh' | false | false | PASA |
+| CB-12 | `es_telefono()` | solo signos permitidos: deberia ser falso | '--------' | false | false | PASA |
+
+### modelo/pedidos.php, transiciones()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-13 | `transiciones()` | clave existente con destinos | Pendiente | ["Preparando","Cancelado"] | ["Preparando","Cancelado"] | PASA |
+| CB-14 | `transiciones()` | clave existente con destinos | Listo | ["En distribucion","Cancelado"] | ["En distribucion","Cancelado"] | PASA |
+| CB-15 | `transiciones()` | clave existente sin destinos | Entregado | [] | [] | PASA |
+| CB-16 | `transiciones()` | clave existente sin destinos | Cancelado | [] | [] | PASA |
+| CB-17 | `transiciones()` | clave inexistente: usa ?? y devuelve [] | Volando | [] | [] | PASA |
+
+### modelo/stock.php, descontar_fifo() y lotes_fifo()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-18 | `descontar_fifo()` | R1: sin lotes, el bucle no corre y falta stock | plato sin lotes, pedir 1 | excepcion: Stock insuficiente para completar el pedido. | excepcion: Stock insuficiente para completar el pedido. | PASA |
+| CB-19 | `descontar_fifo()` | R2: un lote, pedido igual al disponible (queda 0: Agotado) | lote de 10, pedir 10 | 0/10 Agotado \| salidas: 1 | 0/10 Agotado \| salidas: 1 | PASA |
+| CB-20 | `descontar_fifo()` | R3: un lote, pedido menor al disponible (queda stock: Disponible) | lote de 10, pedir 4 | 6/10 Disponible \| salidas: 1 | 6/10 Disponible \| salidas: 1 | PASA |
+| CB-21 | `descontar_fifo()` | R4: dos lotes, el pedido los recorre en orden de vencimiento | lote A (vence +20d, 5) creado primero, lote B (vence +5d, 5), pedir 7 | B 0/5 Agotado \| A 3/5 Disponible | B 0/5 Agotado \| A 3/5 Disponible | PASA |
+| CB-22 | `descontar_fifo()` | R5: la primera vuelta cubre el pedido y la segunda sale por break | lote A (+5d, 10), lote B (+20d, 10), pedir 4 | A 6/10 Disponible \| B 10/10 Disponible | A 6/10 Disponible \| B 10/10 Disponible | PASA |
+| CB-23 | `descontar_fifo()` | R6: recorre todos los lotes y sigue faltando (llamada sin transaccion deja el consumo a medias) | lote A (3), lote B (2), pedir 6 llamando a la funcion sola | excepcion: Stock insuficiente para completar el pedido. \| A 0/3 Agotado \| B 0/2 Agotado | excepcion: Stock insuficiente para completar el pedido. \| A 0/3 Agotado \| B 0/2 Agotado | PASA |
+| CB-24 | `lotes_fifo()` | el filtro de la consulta descarta los lotes vencidos | lote de 10 que vencio ayer, pedir 1 | excepcion: Stock insuficiente para completar el pedido. | excepcion: Stock insuficiente para completar el pedido. | PASA |
+| CB-25 | `lotes_fifo()` | el filtro de la consulta descarta los lotes descartados | lote descartado de 10, pedir 1 | excepcion: Stock insuficiente para completar el pedido. | excepcion: Stock insuficiente para completar el pedido. | PASA |
+
+### modelo/pedidos.php, crear_pedido()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-26 | `crear_pedido()` | camino normal: ambos bucles corren y se confirma | dos platos (3 + 2 viandas) | estado=Pendiente viandas=5 total=500.00 detalle=2 salidas=2 historial=1 | estado=Pendiente viandas=5 total=500.00 detalle=2 salidas=2 historial=1 | PASA |
+| CB-27 | `crear_pedido()` | sin lineas: los bucles no corren (la funcion no valida; lo hace la accion) | lineas vacias | estado=Pendiente viandas=0 total=0.00 detalle=0 | estado=Pendiente viandas=0 total=0.00 detalle=0 | PASA |
+| CB-28 | `crear_pedido()` | catch: falta stock en la segunda linea y se revierte todo | plato A (stock 10, pedir 3) y plato B (stock 1, pedir 5) | excepcion: Stock insuficiente para completar el pedido. \| pedidos nuevos=0 \| A 10/10 Disponible | excepcion: Stock insuficiente para completar el pedido. \| pedidos nuevos=0 \| A 10/10 Disponible | PASA |
+| CB-29 | `crear_pedido()` | catch: una linea apunta a un plato inexistente y se revierte todo | plato inexistente 999999 | excepcion: clave foranea \| pedidos nuevos=0 | excepcion: clave foranea \| pedidos nuevos=0 | PASA |
+
+### modelo/pedidos.php, devolver_stock()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-30 | `devolver_stock()` | sin salidas: el bucle no corre | pedido sin movimientos | entradas de devolucion=0 | entradas de devolucion=0 | PASA |
+| CB-31 | `devolver_stock()` | camino normal: cada salida vuelve a su lote | pedido de 4 sobre un lote de 10 | 10/10 Disponible \| entradas de devolucion=1 | 10/10 Disponible \| entradas de devolucion=1 | PASA |
+| CB-32 | `devolver_stock()` | lote descartado: se saltea con continue | pedido de 4; luego el lote se descarta | 0/10 Descartado \| entradas de devolucion=0 | 0/10 Descartado \| entradas de devolucion=0 | PASA |
+| CB-33 | `devolver_stock()` | el lote ya fue repuesto con un ajuste: la devolucion deberia completarse | pedido de 4; ajuste +4 deja el lote en 10/10; devolver | sin excepcion \| 10/10 Disponible \| entradas de devolucion=0 | sin excepcion \| 10/10 Disponible \| entradas de devolucion=0 | PASA |
+
+### modelo/pedidos.php, cambiar_estado()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-34 | `cambiar_estado()` | sin cancelar: confirma el cambio y el historial | Pendiente a Preparando | estado=Preparando historial=2 | estado=Preparando historial=2 | PASA |
+| CB-35 | `cambiar_estado()` | cancelar: devuelve el stock y libera el vehiculo | Listo con vehiculo 1 a Cancelado | estado=Cancelado vehiculo=null 10/10 Disponible | estado=Cancelado vehiculo=null 10/10 Disponible | PASA |
+| CB-36 | `cambiar_estado()` | catch: la base rechaza el estado y se revierte | estado nuevo 'Volando' | excepcion: valor invalido en 'estado' \| estado=Pendiente historial=1 | excepcion: valor invalido en 'estado' \| estado=Pendiente historial=1 | PASA |
+| CB-37 | `cambiar_estado()` | cancelar con el lote ya repuesto: la cancelacion se completa sin pasar el tope del lote | pedido de 4; ajuste +4; cancelar | sin excepcion \| estado=Cancelado historial=2 10/10 Disponible | sin excepcion \| estado=Cancelado historial=2 10/10 Disponible | PASA |
+
+### modelo/stock.php, ajustar_lote() y descartar_lote()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-38 | `ajustar_lote()` | Salida que deja stock: ambos ternarios por la rama de Salida / Disponible | lote de 10, Salida 3 | 7/10 Disponible \| salidas: 1 | 7/10 Disponible \| salidas: 1 | PASA |
+| CB-39 | `ajustar_lote()` | Salida que vacia el lote: Agotado | lote de 10, Salida 10 | 0/10 Agotado | 0/10 Agotado | PASA |
+| CB-40 | `ajustar_lote()` | Ajuste: suma al disponible | lote de 10 con salida 4, Ajuste +2 | 8/10 Disponible | 8/10 Disponible | PASA |
+| CB-41 | `ajustar_lote()` | Ajuste sobre un lote agotado: vuelve a Disponible | lote agotado, Ajuste +3 | 3/10 Disponible | 3/10 Disponible | PASA |
+| CB-42 | `ajustar_lote()` | si registrar el movimiento falla, el lote no deberia quedar modificado | lote de 10, Salida 1, motivo de 151 caracteres | excepcion: dato demasiado largo en 'motivo' \| 10/10 Disponible | excepcion: dato demasiado largo en 'motivo' \| 10/10 Disponible | PASA |
+| CB-43 | `descartar_lote()` | con stock: registra la salida del descarte | lote de 10 disponible 10 | 0/10 Descartado \| salidas por descarte: 1 | 0/10 Descartado \| salidas por descarte: 1 | PASA |
+| CB-44 | `descartar_lote()` | sin stock: no registra ninguna salida | lote agotado | 0/10 Descartado \| salidas por descarte: 0 | 0/10 Descartado \| salidas por descarte: 0 | PASA |
+
+### modelo/zonas.php, vehiculo_por_id()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-45 | `vehiculo_por_id()` | la carga suma las viandas de los pedidos Listo o En distribucion asignados | Moto 1 con un pedido Listo de 5 viandas | carga=5 | carga=5 | PASA |
+| CB-46 | `vehiculo_por_id()` | los pedidos Pendiente o Entregado no cuentan | Moto 1 con un pedido Entregado de 5 viandas y otro Cancelado | carga=0 | carga=0 | PASA |
+
+### modelo/pedidos.php, devolver_stock(): devolucion parcial
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-47 | `devolver_stock()` | el lote repuesto solo admite parte de lo devuelto: se devuelve lo que cabe y se anota | pedido de 4; ajuste +2 deja el lote en 8/10; devolver | 10/10 Disponible \| devuelto=2 \| motivo con "parcial"=1 | 10/10 Disponible \| devuelto=2 \| motivo con "parcial"=1 | PASA |
+
+### modelo/stock.php, descartar_lote() y descontar_fifo()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-48 | `descartar_lote()` | si registrar la salida falla, el lote no queda descartado | lote de 10, usuario inexistente | excepcion: clave foranea \| 10/10 Disponible | excepcion: clave foranea \| 10/10 Disponible | PASA |
+| CB-49 | `descontar_fifo()` | sin stock se lanza la excepcion de negocio, no una generica | plato sin lotes, pedir 1 | StockInsuficiente (es una RuntimeException) | StockInsuficiente (es una RuntimeException) | PASA |
+
+### includes/conexion.php, en_transaccion()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-50 | `en_transaccion()` | el trabajo termina bien: devuelve su valor y confirma | inserta un plato y devuelve 42 | valor=42 \| plato guardado=1 | valor=42 \| plato guardado=1 | PASA |
+| CB-51 | `en_transaccion()` | el trabajo lanza una excepcion: revierte y la relanza | inserta un plato y lanza una excepcion | excepcion: fallo a proposito \| plato guardado=0 | excepcion: fallo a proposito \| plato guardado=0 | PASA |
+
+### includes/funciones.php, es_telefono() y es_email()
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-52 | `es_telefono()` | ocho digitos con signos: justo en el limite | '+(598) 12-345' | true | true | PASA |
+| CB-53 | `es_telefono()` | siete digitos con signos: el formato pasa pero faltan digitos | '+(598) 12-34' | false | false | PASA |
+| CB-54 | `es_email()` | ambos operandos verdaderos: 150 caracteres, el maximo de la columna | correo de 150 caracteres | true | true | PASA |
+| CB-55 | `es_email()` | primer operando falso: 151 caracteres | correo de 151 caracteres | false | false | PASA |
+| CB-56 | `es_email()` | primero verdadero y segundo falso: sin arroba | 'abc' | false | false | PASA |
+
+### modelo/accesos.php (limite de intentos fallidos)
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-57 | `acceso_bloqueado()` | sin intentos: no esta bloqueado | tabla vacia | false | false | PASA |
+| CB-58 | `acceso_bloqueado()` | un fallo menos que el maximo: ambos operandos falsos | 4 fallos del mismo usuario | false | false | PASA |
+| CB-59 | `acceso_bloqueado()` | primer operando verdadero: se alcanza el maximo del usuario | 5 fallos del mismo usuario | true | true | PASA |
+| CB-60 | `acceso_bloqueado()` | primero falso y segundo verdadero: muchos usuarios distintos desde una direccion | 20 fallos de 20 usuarios desde la misma direccion, ingresa otro | true | true | PASA |
+| CB-61 | `acceso_bloqueado()` | los fallos fuera de la ventana no cuentan | 5 fallos de hace 11 minutos | false | false | PASA |
+| CB-62 | `clave_de_acceso()` | se normaliza: sin espacios, en minusculas y de a lo sumo 150 caracteres | ' GERENTE ' y un texto de 200 | gerente \| largo=150 | gerente \| largo=150 | PASA |
+| CB-63 | `registrar_intento_fallido()` | borra los intentos de mas de un dia | un intento de hace 2 dias y uno nuevo | intentos guardados=1 | intentos guardados=1 | PASA |
+| CB-64 | `limpiar_intentos()` | borra solo los del usuario indicado | 2 fallos de a, 1 de b; limpiar A | quedan=1 | quedan=1 | PASA |
+
+### modelo/pedidos.php, listar_pedidos(): filtro de busqueda
+
+| Caso | Unidad | Camino | Entrada | Resultado esperado | Resultado obtenido | Estado |
+|---|---|---|---|---|---|---|
+| CB-65 | `listar_pedidos()` | buscar con # y numero: coincide por id | '#' + id de un pedido recien creado | unico=si | unico=si | PASA |
+| CB-66 | `listar_pedidos()` | buscar un nombre: todas las filas son de ese cliente | 'Julio Rod' | todas coinciden=si | todas coinciden=si | PASA |
+| CB-67 | `listar_pedidos()` | texto sin coincidencias | 'zzzz' | filas=0 | filas=0 | PASA |
+| CB-68 | `listar_pedidos()` | el comodin % se busca como texto, no como "cualquier cosa" | '%' | filas=0 | filas=0 | PASA |
+| CB-69 | `listar_pedidos()` | busqueda vacia: la condicion no se agrega | '' | igual que sin filtro=si | igual que sin filtro=si | PASA |
+
+TOTAL: 69 casos, 69 pasan, 0 fallan.
+
+Salida completa de docs/pruebas-caja-blanca-concurrencia.php
+Ejecutado el 08/11/2026 con 1 procesos y 50 pedidos por proceso (50 pedidos de 1 vianda sobre un mismo lote)
+PHP 8.2.35 - 10.11.19-MariaDB
+
+| Medida | Valor |
+|---|---|
+| Pedidos confirmados | 50 |
+| Pedidos con error | 0 |
+| Viandas vendidas segun pedido_detalle | 50 |
+| Salidas registradas en movimientos_stock | 50 |
+| Disponible que deberia tener el lote (cantidad - salidas) | 100 |
+| Disponible real del lote | 100 |
+| Unidades que el lote muestra de mas | 0 |
+
+RESULTADO: el stock del lote coincide con el libro de movimientos en esta corrida.
+
+Salida completa de docs/pruebas-caja-blanca-concurrencia.php
+Ejecutado el 08/11/2026 con 2 procesos y 25 pedidos por proceso (50 pedidos de 1 vianda sobre un mismo lote)
+PHP 8.2.35 - 10.11.19-MariaDB
+
+| Medida | Valor |
+|---|---|
+| Pedidos confirmados | 50 |
+| Pedidos con error | 0 |
+| Viandas vendidas segun pedido_detalle | 50 |
+| Salidas registradas en movimientos_stock | 50 |
+| Disponible que deberia tener el lote (cantidad - salidas) | 100 |
+| Disponible real del lote | 100 |
+| Unidades que el lote muestra de mas | 0 |
+
+RESULTADO: el stock del lote coincide con el libro de movimientos en esta corrida.
+
+Salida completa de docs/pruebas-caja-blanca-concurrencia.php
+Ejecutado el 08/11/2026 con 8 procesos y 25 pedidos por proceso (200 pedidos de 1 vianda sobre un mismo lote)
+PHP 8.2.35 - 10.11.19-MariaDB
+
+| Medida | Valor |
+|---|---|
+| Pedidos confirmados | 200 |
+| Pedidos con error | 0 |
+| Viandas vendidas segun pedido_detalle | 200 |
+| Salidas registradas en movimientos_stock | 200 |
+| Disponible que deberia tener el lote (cantidad - salidas) | 100 |
+| Disponible real del lote | 100 |
+| Unidades que el lote muestra de mas | 0 |
+
+RESULTADO: el stock del lote coincide con el libro de movimientos en esta corrida.

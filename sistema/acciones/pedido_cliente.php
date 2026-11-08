@@ -100,8 +100,13 @@ try {
         $lineas,
         (int) usuario()['id']
     );
-} catch (Throwable $error) {
+} catch (StockInsuficiente $error) {
     volver_con_errores($volver, ['No se pudo registrar el pedido: ' . $error->getMessage()], $datos);
+} catch (Throwable $error) {
+    error_log('crear_pedido: ' . $error->getMessage());
+    volver_con_errores($volver, ['No se pudo registrar el pedido. Intenta nuevamente en unos minutos.'], $datos);
 }
 
+flash_guardar('exito_titulo', 'Pedido confirmado');
+flash_guardar('celebrar', true);
 volver_con_exito('cliente/seguimiento.php?id=' . $pedidoId, 'Pedido #' . $pedidoId . ' confirmado. Te avisamos cuando este en camino.');

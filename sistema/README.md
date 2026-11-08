@@ -116,6 +116,7 @@ responde JSON. Ningun archivo de presentacion escribe SQL.
 - [Base de datos](docs/base-de-datos.md)
 - [Flujos de navegacion](docs/flujo-navegacion.md)
 - [Pruebas](docs/pruebas.md) · [salida de consola](docs/pruebas-consola.txt) · [capturas](docs/capturas)
+- [Pruebas de caja negra](docs/pruebas-caja-negra.md) · [pruebas de caja blanca](docs/pruebas-caja-blanca.md) · [informe de defectos](docs/informe-de-defectos.md)
 
 ## Funcionalidades implementadas
 

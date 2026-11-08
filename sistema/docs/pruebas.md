@@ -24,7 +24,7 @@ modifican datos.
 | P03 | Login con inyeccion SQL | usuario `admin' OR '1'='1`, contrasena `x` | La consulta preparada trata el texto como dato: no hay acceso | "Usuario o contrasena incorrectos." | consola P03 |
 | P04 | Acceso sin sesion | GET a `admin/index.php` sin cookie | Redireccion al login | 302 a `login.php` | consola P04 |
 | P05 | Acceso con rol incorrecto | Sesion de cliente sobre `admin/index.php` y `operador/stock.php` | Acceso denegado | 403 con la pantalla "Acceso denegado" | consola P05, captura 21 |
-| P06 | Cierre de sesion | Sesion de `admin`, luego `logout.php` | La sesion se destruye y no se puede volver | 200 antes del logout y 302 al login despues | consola P06 |
+| P06 | Cierre de sesion | Sesion de `admin`, luego `POST` a `logout.php` con el token | La sesion se destruye y no se puede volver | 200 antes del logout y 302 al login despues | consola P06 |
 | P07 | Proteccion CSRF | POST a `acciones/zonas.php` con `token=falso` | La accion se rechaza | HTTP 400 "Solicitud invalida" | consola P07 |
 | P08 | Usuario inactivo | `lucia` desactivada por SQL, contrasena correcta | No puede entrar | "La cuenta esta inactiva. Consulta con el administrador." | consola P08 |
 | P43 | Restricciones cruzadas | Operador sobre pantallas y acciones del admin, admin sobre acciones del operador | Todas rechazadas | 403 en los tres intentos | consola P43 |

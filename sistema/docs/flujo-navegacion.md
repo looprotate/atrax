@@ -19,8 +19,12 @@ index.php
 
 login.php ──> registro.php ──> acciones/registro.php ──> login.php + "cuenta creada"
 
-cualquier pantalla ──> logout.php ──> destruye la sesion ──> login.php
+cualquier pantalla ──> boton Salir (POST con token) ──> logout.php ──> destruye la sesion ──> login.php
 ```
+
+`logout.php` solo acepta `POST` con el token de la sesion: un enlace o una imagen de otro sitio no puede cerrar la
+sesion. En el ingreso, cinco fallos seguidos del mismo usuario (o veinte desde la misma direccion) en 10 minutos
+bloquean nuevos intentos hasta que pase ese tiempo.
 
 Guardas: cada pantalla llama a `requiere_rol(...)` antes de imprimir nada. Sin
 sesion redirige a `login.php`; con el rol equivocado devuelve un 403. Cada archivo

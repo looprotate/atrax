@@ -59,14 +59,14 @@ atrax/
   sistema/               sistema funcional de la tercera entrega
     index.php            entrada: redirige al panel segun el rol
     404.php              pantalla de pagina no encontrada
-    .htaccess            envia las direcciones inexistentes a 404.php
+    .htaccess            bloquea bd/, docs/ y archivos internos (403) y envia las direcciones inexistentes a 404.php
     login.php            inicio de sesion
     registro.php         alta de clientes
     logout.php           cierre de sesion
     includes/            infraestructura comun
       config.php         datos de conexion y constantes
       conexion.php       PDO, funciones de consulta preparada y en_transaccion()
-      funciones.php      escape, validaciones, mensajes, token CSRF
+      funciones.php      escape, validaciones, mensajes, token CSRF y cabeceras de seguridad
       auth.php           sesion, roles y guardas de acceso
       cabecera.php       encabezado, navegacion y mensajes
       pie.php            cierre de pagina y scripts
@@ -75,6 +75,7 @@ atrax/
       pantalla_error.php plantilla de las pantallas de error
     modelo/              acceso a datos (una funcion por consulta)
       usuarios.php       usuarios, roles y clientes
+      accesos.php        ingresos fallidos y bloqueo temporal
       zonas.php          zonas y vehiculos
       catalogo.php       productos y planes
       stock.php          lotes, movimientos y FIFO
@@ -95,6 +96,7 @@ atrax/
     assets/js/avisos.js  pop ups: avisos flotantes y ventanas de confirmacion
     assets/js/esqueletos.js  esqueletos de carga al navegar entre pantallas
     assets/js/efectos.js  numeros que suben, barra de viandas y confeti al confirmar un pedido
+    assets/js/pantalla_error.js  boton volver y reintento automatico de las pantallas de error
     bd/atrax.sql         estructura + datos de prueba
     docs/                documentacion, pruebas y capturas
 ```
@@ -119,7 +121,11 @@ resultado. Ningun archivo de presentacion escribe SQL.
 - Login con usuario o correo, validacion contra la base, identificacion del rol,
   creacion de sesion y redireccion al panel correspondiente.
 - Registro autonomo de clientes con validacion de datos y control de duplicados.
-- Cierre de sesion con destruccion de la sesion y de su cookie.
+- Cierre de sesion con destruccion de la sesion y de su cookie, solo por `POST` con token.
+- Bloqueo temporal despues de 5 ingresos fallidos del mismo usuario (o 20 de la misma
+  direccion) en 10 minutos.
+- Cabeceras de seguridad (`Content-Security-Policy`, `X-Frame-Options`,
+  `X-Content-Type-Options`, `Referrer-Policy`).
 - Bloqueo de pantallas no autorizadas (403) y de acciones no autorizadas.
 - Esqueletos de carga: al pasar de una pantalla a otra o enviar un formulario, el
   contenido se reemplaza por un esqueleto (placeholders de Bootstrap 5) con la forma

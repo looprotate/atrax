@@ -32,7 +32,7 @@ segunda entrega ([`wireframes/`](../../wireframes)).
 - **Barra superior** (azul marino): logo completo (el mismo del inicio de sesion y del icono de la pestana) y nombre, secciones del rol (el cliente y
   el operador las ven como pildoras; el administrador tiene un menu lateral que en
   pantallas angostas se abre con el boton ☰), nombre del usuario y boton **Salir**,
-  que pide confirmacion antes de cerrar la sesion.
+  que pide confirmacion y cierra la sesion con un `POST` con token.
 - **Avisos emergentes**: el resultado de cada accion aparece arriba a la derecha.
   Los avisos de exito (verde) se cierran solos a los 5 segundos; los de error
   (rojo) quedan hasta que se cierran con la ✕ y enumeran cada dato a corregir.
@@ -64,7 +64,9 @@ segunda entrega ([`wireframes/`](../../wireframes)).
 Entrada al sistema (capturas 01 y 24). Se ingresa con el **usuario o el correo**
 y la contrasena (el boton **ver** la muestra). Si los datos son correctos se abre
 el panel del rol con un aviso de bienvenida; si no, aparece el aviso "Usuario o
-contrasena incorrectos" (captura 02). Una cuenta desactivada no puede entrar.
+contrasena incorrectos" (captura 02). Una cuenta desactivada no puede entrar. Despues de
+5 intentos fallidos con el mismo usuario en 10 minutos (o 20 desde la misma direccion) el sistema avisa
+"Demasiados intentos fallidos" y no prueba mas contrasenas hasta que pase ese tiempo.
 Si la base de datos no responde, en lugar del formulario se muestra la pantalla
 de servidores caidos. Debajo estan las cuentas de prueba y el acceso a crear
 cuenta.

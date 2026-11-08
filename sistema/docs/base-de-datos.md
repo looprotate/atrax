@@ -19,6 +19,7 @@ de prueba) esta en [`bd/atrax.sql`](../bd/atrax.sql).
 | `pedido_detalle` | Platos y cantidades de un pedido | `id` | `pedido_id` -> `pedidos`, `producto_id` -> `productos` | `pedido_id` + `producto_id` |
 | `pedido_estados` | Historial de cambios de estado | `id` | `pedido_id` -> `pedidos`, `usuario_id` -> `usuarios` | — |
 | `movimientos_stock` | Entradas, salidas y ajustes por lote | `id` | `lote_id` -> `lotes`, `usuario_id` -> `usuarios`, `pedido_id` -> `pedidos` | — |
+| `intentos_acceso` | Ingresos fallidos recientes, para limitar los intentos | `id` | — | — |
 
 ## Relaciones
 
@@ -41,6 +42,11 @@ roles 1 ── N usuarios 1 ── 1 clientes N ── 1 zonas
   borran con su pedido (`ON DELETE CASCADE`) porque no tienen sentido sin el.
 - `Stock` del diccionario de datos no es una tabla: el stock disponible se calcula
   sumando `lotes.disponible` de los lotes vigentes. Asi no puede quedar desincronizado.
+
+- `intentos_acceso` no tiene claves foraneas a proposito: guarda lo que se escribio en el formulario de ingreso
+  (`identificador`, en minusculas) y la direccion (`direccion`), que puede ser de un usuario que no existe. Se
+  consulta por `(identificador, fecha)` y por `(direccion, fecha)`, y los registros de mas de un dia se borran al
+  guardar uno nuevo. Arranca vacia.
 
 ## Dominios cerrados (ENUM)
 

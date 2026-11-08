@@ -51,9 +51,12 @@ $listaErrores = errores();
     <div class="ms-auto d-flex align-items-center gap-2">
       <span class="d-none d-sm-inline atrax-usuario small"><?= e($yo['nombre']) ?> · <?= e($rol) ?></span>
       <span class="atrax-avatar" aria-hidden="true"><?= e($yo['inicial']) ?></span>
-      <a class="btn btn-sm btn-outline-light" href="<?= url('logout.php') ?>"
-         data-confirmar="Vas a salir de <?= APP_NOMBRE ?>. Para volver a entrar vas a necesitar tu usuario y contrasena."
-         data-confirmar-titulo="Cerrar sesion?" data-confirmar-boton="Salir">Salir</a>
+      <form action="<?= url('logout.php') ?>" method="post"
+            data-confirmar="Vas a salir de <?= APP_NOMBRE ?>. Para volver a entrar vas a necesitar tu usuario y contrasena."
+            data-confirmar-titulo="Cerrar sesion?" data-confirmar-boton="Salir">
+        <?= campo_token() ?>
+        <button class="btn btn-sm btn-outline-light" type="submit">Salir</button>
+      </form>
     </div>
   </div>
 </header>

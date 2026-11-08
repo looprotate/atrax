@@ -155,6 +155,15 @@ CREATE TABLE movimientos_stock (
   CONSTRAINT ck_movimientos_cantidad CHECK (cantidad > 0)
 ) ENGINE=InnoDB;
 
+CREATE TABLE intentos_acceso (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  identificador VARCHAR(150) NOT NULL,
+  direccion VARCHAR(45) NOT NULL,
+  fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_intentos_identificador (identificador, fecha),
+  KEY idx_intentos_direccion (direccion, fecha)
+) ENGINE=InnoDB;
+
 INSERT INTO roles (id, nombre, descripcion) VALUES
 (1, 'administrador', 'Gerente: parametriza el sistema, gestiona menus y consulta estadisticas'),
 (2, 'operador', 'Jefe de cocina: produccion, stock FIFO y distribucion'),

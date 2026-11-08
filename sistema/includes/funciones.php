@@ -43,6 +43,18 @@ function redirigir(string $ruta): void
     exit;
 }
 
+// Impide que otro sitio incruste las paginas, que el navegador adivine tipos de archivo y que se
+// ejecute codigo que no venga de este sitio o de la libreria Bootstrap.
+function enviar_cabeceras_seguridad(): void
+{
+    header('X-Frame-Options: DENY');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: same-origin');
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; "
+        . "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data:; "
+        . "frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+}
+
 function campo(string $nombre, $porDefecto = ''): string
 {
     return trim((string) ($_POST[$nombre] ?? $porDefecto));

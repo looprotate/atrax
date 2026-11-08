@@ -46,7 +46,7 @@ necesita seguir; falta la bitacora de los cambios de parametrizacion.
 
 | ID | Requerimiento | Como se cumple en esta version |
 |---|---|---|
-| RNF1 | Seguridad | Contrasenas con `password_hash` (bcrypt), consultas con sentencias preparadas, token CSRF en cada formulario, cookie de sesion `HttpOnly` y `SameSite=Lax`, y regeneracion del identificador de sesion al entrar |
+| RNF1 | Seguridad | Contrasenas con `password_hash` (bcrypt), consultas con sentencias preparadas, token CSRF en cada formulario, cookie de sesion `HttpOnly` y `SameSite=Lax`, regeneracion del identificador de sesion al entrar, bloqueo temporal tras 5 ingresos fallidos, cierre de sesion solo por `POST` con token, cabeceras de seguridad (`Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) y `.htaccess` que no sirve `bd/`, `docs/` ni archivos `.sql`, `.md`, `.sh` o `.txt` |
 | RNF2 | Usabilidad | Navegacion fija por rol, mensajes de exito y de error en la misma pantalla, y formularios que conservan lo escrito cuando hay un error |
 | RNF3 | Escalabilidad | Zonas, vehiculos, platos, planes y stock minimo son datos, no codigo |
 | RNF4 | Mantenibilidad | Separacion en `includes` (infraestructura), `modelo` (datos), `acciones` (escritura) y paginas (presentacion) |

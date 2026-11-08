@@ -65,7 +65,7 @@ atrax/
     logout.php           cierre de sesion
     includes/            infraestructura comun
       config.php         datos de conexion y constantes
-      conexion.php       PDO + funciones de consulta preparada
+      conexion.php       PDO, funciones de consulta preparada y en_transaccion()
       funciones.php      escape, validaciones, mensajes, token CSRF
       auth.php           sesion, roles y guardas de acceso
       cabecera.php       encabezado, navegacion y mensajes

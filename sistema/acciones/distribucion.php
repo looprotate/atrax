@@ -50,9 +50,12 @@ if ($vehiculo === null) {
         $errores[] = 'El vehiculo no cubre la zona ' . $pedido['zona_codigo'] . ' del pedido.';
     }
 
-    if ((int) $vehiculo['carga'] + (int) $pedido['viandas'] > (int) $vehiculo['capacidad']) {
+    // La carga del vehiculo ya incluye al pedido cuando este ya esta asignado a el.
+    $viandasNuevas = (int) $pedido['vehiculo_id'] === (int) $vehiculo['id'] ? 0 : (int) $pedido['viandas'];
+
+    if ((int) $vehiculo['carga'] + $viandasNuevas > (int) $vehiculo['capacidad']) {
         $errores[] = 'El vehiculo ' . $vehiculo['nombre'] . ' no tiene capacidad suficiente ('
-            . (int) $vehiculo['carga'] . ' + ' . (int) $pedido['viandas'] . ' supera ' . (int) $vehiculo['capacidad'] . ').';
+            . (int) $vehiculo['carga'] . ' + ' . $viandasNuevas . ' supera ' . (int) $vehiculo['capacidad'] . ').';
     }
 }
 
